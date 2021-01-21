@@ -32,22 +32,28 @@
 
     <ImageButton
         android:id="@+id/ibEnglish"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="16dp"
+        android:background="#FFFFFF"
+        android:scaleType="centerInside"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@android:drawable/btn_star" />
+        app:srcCompat="@drawable/bf4d23d06cf97efc5317841ad3f7e3c8" />
 
     <ImageButton
         android:id="@+id/ibGreek"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="8dp"
+        android:background="#FFFFFF"
+        android:scaleType="centerInside"
+        android:scaleX="1"
+        android:scaleY="1"
         app:layout_constraintBottom_toTopOf="@+id/ibEnglish"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@android:drawable/btn_star_big_on" />
+        app:srcCompat="@drawable/gr" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
