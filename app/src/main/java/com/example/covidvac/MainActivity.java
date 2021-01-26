@@ -2,6 +2,7 @@ package com.example.covidvac;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -17,7 +18,8 @@ public class MainActivity extends AppCompatActivity {
 
         Button button = findViewById(R.id.btnEnter);
         button.setOnClickListener(v -> {
-
+            Intent intent = new Intent(this, CitizenLoginActivity.class);
+            startActivity(intent);
         });
 
         ImageButton greekBtn = findViewById(R.id.ibGreek);

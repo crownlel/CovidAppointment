@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingHorizontal="20dp"
+    android:paddingTop="50dp"
+    tools:context=".CitizenLoginActivity">
+
+    <TextView
+        android:id="@+id/tvTaxId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/citizen_login_tv_tax_id" />
+
+    <EditText
+        android:id="@+id/etTaxId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/citizen_login_et_tax_id_hint"
+        android:inputType="textPersonName" />
+
+    <TextView
+        android:id="@+id/tvBirthdate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/citizen_login_tv_birthdate" />
+
+    <EditText
+        android:id="@+id/etBirthdate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:editable="true"
+        android:ems="10"
+        android:focusable="false"
+        android:hint="@string/citizen_login_et_birthdate_hint"
+        android:inputType="date" />
+
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/main_btn_enter" />
+
+</LinearLayout>

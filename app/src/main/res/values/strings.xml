@@ -3,4 +3,8 @@
 
     <string name="main_greeting">Welcome</string>
     <string name="main_btn_enter">Enter</string>
+    <string name="citizen_login_tv_tax_id">Taxation ID</string>
+    <string name="citizen_login_et_tax_id_hint">Enter Taxation ID</string>
+    <string name="citizen_login_tv_birthdate">Date of birth</string>
+    <string name="citizen_login_et_birthdate_hint">Enter date of birth</string>
 </resources>

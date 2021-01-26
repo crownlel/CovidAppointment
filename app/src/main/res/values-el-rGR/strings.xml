@@ -3,4 +3,8 @@
     <string name="app_name">CovidVac</string>
     <string name="main_greeting">Καλως ήλθατε</string>
     <string name="main_btn_enter">Είσοδος</string>
+    <string name="citizen_login_tv_tax_id">Α.Φ.Μ.</string>
+    <string name="citizen_login_et_tax_id_hint">Εισάγετε ΑΦΜ</string>
+    <string name="citizen_login_tv_birthdate">Ημ. Γέννησης</string>
+    <string name="citizen_login_et_birthdate_hint">Εισάγετε ημ. γέννησης</string>
 </resources>
