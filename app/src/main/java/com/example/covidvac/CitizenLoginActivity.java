@@ -11,6 +11,9 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
+import com.example.covidvac.models.Citizen;
+
+import java.util.Date;
 import java.util.Locale;
 
 public class CitizenLoginActivity extends AppCompatActivity {
@@ -42,9 +45,13 @@ public class CitizenLoginActivity extends AppCompatActivity {
         });
 
         //login
-        Button btnLogin = findViewById(R.id.btnEnter);
+        Button btnLogin = findViewById(R.id.btnLogin);
         btnLogin.setOnClickListener(v -> {
             Intent intent = new Intent(this, CitizenMainActivity.class);
+            Bundle bundle = new Bundle();
+            //TODO change this
+            bundle.putSerializable("citizen", new Citizen(1,"spyros",new Date(),"asd","1234","210354456")); //Your id
+            intent.putExtras(bundle);
             startActivity(intent);
         });
 
