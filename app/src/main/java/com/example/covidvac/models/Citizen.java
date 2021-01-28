@@ -4,12 +4,15 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Citizen implements Serializable {
-    private final int id;
-    private final String name;
-    private final Date birthday;
-    private final String id_number;
-    private final String tax_id;
-    private final String telephone;
+    private  int id;
+    private String name;
+    private Date birthday;
+    private String id_number;
+    private String tax_id;
+    private String telephone;
+
+
+
 
     public Citizen(int id, String name, Date birthday, String id_number, String tax_id, String telephone) {
         this.id = id;
@@ -18,6 +21,10 @@ public class Citizen implements Serializable {
         this.id_number = id_number;
         this.tax_id = tax_id;
         this.telephone = telephone;
+    }
+
+    public Citizen(){
+
     }
 
     public int getId() {
