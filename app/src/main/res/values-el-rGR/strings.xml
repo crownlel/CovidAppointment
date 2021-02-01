@@ -10,4 +10,5 @@
     <string name="title_activity_citizen_main">δασσαδ</string>
     <string name="citizen_main_tab_text_1">Καταχώρηση νέου</string>
     <string name="citizen_main_tab_text_2">Καταχωρημένα</string>
+    <string name="citizen_login_wrong_credentials">Λάθος στοιχεία. \nΠαρακαλώ, ξαναπροσπαθήστε.</string>
 </resources>
