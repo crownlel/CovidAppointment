@@ -16,6 +16,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.covidvac.interfaces.CitizenCallback;
 import com.example.covidvac.models.Citizen;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.ChildEventListener;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Callable;
 
 public class CitizenLoginActivity extends AppCompatActivity {
 
@@ -44,12 +46,12 @@ public class CitizenLoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_citizen_login);
         db = FirebaseDatabase.getInstance();
-        sharedPref = getApplicationContext().getSharedPreferences("LOGIN_PREFS",Context.MODE_PRIVATE);
+        sharedPref = getApplicationContext().getSharedPreferences("LOGIN_PREFS", Context.MODE_PRIVATE);
 
         EditText etTaxId = findViewById(R.id.etTaxId);
         EditText etBirthDate = findViewById(R.id.etBirthdate);
-        etTaxId.setText(sharedPref.getString(TAX_ID_KEY,""));
-        etBirthDate.setText(sharedPref.getString(BIRTHDAY,""));
+        etTaxId.setText(sharedPref.getString(TAX_ID_KEY, ""));
+        etBirthDate.setText(sharedPref.getString(BIRTHDAY, ""));
 
 
         //calendar stuff
@@ -78,13 +80,35 @@ public class CitizenLoginActivity extends AppCompatActivity {
             //TODO change this
             String tax_id = etTaxId.getText().toString().trim();
             String birthdate = etBirthDate.getText().toString().trim();
-            login(tax_id.trim(), birthdate.trim());
+            DatabaseReference cref = db.getReference("Citizens");
+ //           login(tax_id.trim(), birthdate.trim());
+            Citizen citizen = new Citizen();
+            citizen.login(cref, tax_id.trim(), birthdate.trim(), new CitizenCallback() {
+                @Override
+                public void loginCalled(boolean success) {
+
+                    if (success) {
+                        Intent intent = new Intent(getApplicationContext(), CitizenMainActivity.class);
+                        Bundle bundle = new Bundle();
+
+                        bundle.putSerializable("citizen", citizen);
+                        intent.putExtras(bundle);
+                        startActivity(intent);
+                    } else {
+
+                        Toast.makeText(getApplicationContext(),
+                                getString(R.string.citizen_login_wrong_credentials), Toast.LENGTH_SHORT)
+                                .show();
+                    }
+                }
+            });
+
 
         });
 
     }
 
-    private Citizen login(String tax_id , String birthdate){
+    private Citizen login(String tax_id, String birthdate) {
 
         Intent intent = new Intent(this, CitizenMainActivity.class);
         Bundle bundle = new Bundle();
@@ -96,10 +120,10 @@ public class CitizenLoginActivity extends AppCompatActivity {
             cref.orderByKey().addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
                         Citizen ciz = snapshot.getValue(Citizen.class);
-                        if (ciz != null && tax_id.equals(ciz.getTax_id()) && birthdate.equals(ciz.getBirthdayToString())){
+                        if (ciz != null && tax_id.equals(ciz.getTax_id()) && birthdate.equals(ciz.getBirthdayToString())) {
 
                             bundle.putSerializable("citizen", ciz);
                             intent.putExtras(bundle);
@@ -117,8 +141,7 @@ public class CitizenLoginActivity extends AppCompatActivity {
 
                 }
             });
-        }
-        catch (Exception ex){
+        } catch (Exception ex) {
             Toast.makeText(getApplicationContext(),
                     "Oops", Toast.LENGTH_SHORT)
                     .show();
@@ -132,13 +155,13 @@ public class CitizenLoginActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if (sharedPref !=null){
+        if (sharedPref != null) {
             SharedPreferences.Editor editor = sharedPref.edit();
 
             EditText etTaxId = findViewById(R.id.etTaxId);
             EditText etBirthDate = findViewById(R.id.etBirthdate);
             editor.putString(TAX_ID_KEY, etTaxId.getText().toString());
-            editor.putString(BIRTHDAY,etBirthDate.getText().toString());
+            editor.putString(BIRTHDAY, etBirthDate.getText().toString());
             editor.apply();
         }
     }
