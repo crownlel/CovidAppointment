@@ -23,20 +23,28 @@ public class MainActivity extends AppCompatActivity {
         });
 
         ImageButton greekBtn = findViewById(R.id.ibGreek);
-        greekBtn.setOnClickListener(v ->{
-            LocaleManager.setLocale(this,"el");
+        greekBtn.setOnClickListener(v -> {
+            LocaleManager.setLocale(this, "el");
             this.finish();
             overridePendingTransition(0, 0);
             this.startActivity(getIntent());
             overridePendingTransition(0, 0);
         });
         ImageButton engBtn = findViewById(R.id.ibEnglish);
-        engBtn.setOnClickListener(v ->{
-            LocaleManager.setLocale(this,"en");
+        engBtn.setOnClickListener(v -> {
+            LocaleManager.setLocale(this, "en");
             this.finish();
             overridePendingTransition(0, 0);
             this.startActivity(getIntent());
             overridePendingTransition(0, 0);
         });
+    }
+
+    public void mapView(View view) {
+
+        Intent maps = new Intent(this, MapsActivity.class);
+
+        startActivity(maps);
+
     }
 }
