@@ -107,50 +107,50 @@ public class CitizenLoginActivity extends AppCompatActivity {
         });
 
     }
-
-    private Citizen login(String tax_id, String birthdate) {
-
-        Intent intent = new Intent(this, CitizenMainActivity.class);
-        Bundle bundle = new Bundle();
-
-        try {
-
-            DatabaseReference cref = db.getReference("Citizens");
-
-            cref.orderByKey().addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-
-                        Citizen ciz = snapshot.getValue(Citizen.class);
-                        if (ciz != null && tax_id.equals(ciz.getTax_id()) && birthdate.equals(ciz.getBirthdayToString())) {
-
-                            bundle.putSerializable("citizen", ciz);
-                            intent.putExtras(bundle);
-                            startActivity(intent);
-                            return;
-                        }
-                    }
-                    Toast.makeText(getApplicationContext(),
-                            getString(R.string.citizen_login_wrong_credentials), Toast.LENGTH_SHORT)
-                            .show();
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-
-                }
-            });
-        } catch (Exception ex) {
-            Toast.makeText(getApplicationContext(),
-                    "Oops", Toast.LENGTH_SHORT)
-                    .show();
-
-        }
-
-
-        return null;
-    }
+//
+//    private Citizen login(String tax_id, String birthdate) {
+//
+//        Intent intent = new Intent(this, CitizenMainActivity.class);
+//        Bundle bundle = new Bundle();
+//
+//        try {
+//
+//            DatabaseReference cref = db.getReference("Citizens");
+//
+//            cref.orderByKey().addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//
+//                        Citizen ciz = snapshot.getValue(Citizen.class);
+//                        if (ciz != null && tax_id.equals(ciz.getTax_id()) && birthdate.equals(ciz.getBirthdayToString())) {
+//
+//                            bundle.putSerializable("citizen", ciz);
+//                            intent.putExtras(bundle);
+//                            startActivity(intent);
+//                            return;
+//                        }
+//                    }
+//                    Toast.makeText(getApplicationContext(),
+//                            getString(R.string.citizen_login_wrong_credentials), Toast.LENGTH_SHORT)
+//                            .show();
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError error) {
+//
+//                }
+//            });
+//        } catch (Exception ex) {
+//            Toast.makeText(getApplicationContext(),
+//                    "Oops", Toast.LENGTH_SHORT)
+//                    .show();
+//
+//        }
+//
+//
+//        return null;
+//    }
 
     @Override
     protected void onStop() {

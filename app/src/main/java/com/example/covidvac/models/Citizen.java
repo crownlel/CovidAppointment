@@ -144,7 +144,7 @@ public class Citizen implements Serializable {
         }
     }
 
-    public void getAppointments(DatabaseReference appRef, int cit_id, final AppointmentCallback callback){
-        Appointment.getCitizenAppointments(appRef, cit_id, callback);
+    public void getAppointments(DatabaseReference appRef, final AppointmentCallback callback){
+        Appointment.getCitizenAppointments(appRef, id, callback);
     }
 }

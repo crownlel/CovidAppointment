@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layoutAppointmentItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hmeromhnia"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/tvTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Wra"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/tvCentre"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Kentro"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/tvCitName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Onoma"
+        android:textSize="18sp" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        app:srcCompat="@drawable/ic_baseline_pending_actions_24" />
+
+</LinearLayout>
