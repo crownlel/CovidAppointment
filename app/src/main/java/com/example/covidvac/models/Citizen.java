@@ -2,6 +2,7 @@ package com.example.covidvac.models;
 
 import androidx.annotation.NonNull;
 
+import com.example.covidvac.interfaces.AppointmentCallback;
 import com.example.covidvac.interfaces.CitizenCallback;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
@@ -16,6 +17,7 @@ import  java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.Semaphore;
 
@@ -140,5 +142,9 @@ public class Citizen implements Serializable {
         } catch (Exception ex) {
             throw ex;
         }
+    }
+
+    public void getAppointments(DatabaseReference appRef, int cit_id, final AppointmentCallback callback){
+        Appointment.getCitizenAppointments(appRef, cit_id, callback);
     }
 }
