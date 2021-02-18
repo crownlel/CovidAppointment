@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import com.example.covidvac.R;
+import com.example.covidvac.models.Citizen;
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
@@ -19,10 +20,12 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     @StringRes
     private static final int[] TAB_TITLES = new int[]{R.string.citizen_main_tab_text_1, R.string.citizen_main_tab_text_2};
     private final Context mContext;
+    private final Citizen citizen;
 
-    public SectionsPagerAdapter(Context context, FragmentManager fm) {
+    public SectionsPagerAdapter(Context context, FragmentManager fm, Citizen citizen) {
         super(fm);
         mContext = context;
+        this.citizen = citizen;
     }
 
     @Override
@@ -32,9 +35,9 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         //return PlaceholderFragment.newInstance(position + 1);
         switch (position){
             case 0:
-                return NewAppointmentFragment.newInstance(position + 1);
+                return NewAppointmentFragment.newInstance(citizen);
             case 1:
-                return AppointmentsFragment.newInstance("test");
+                return AppointmentsFragment.newInstance(citizen);
         }
         return null;
     }

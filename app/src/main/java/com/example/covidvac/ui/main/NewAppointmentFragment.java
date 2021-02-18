@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.covidvac.R;
+import com.example.covidvac.models.Citizen;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -23,7 +24,7 @@ public class NewAppointmentFragment extends Fragment {
 
     //private PageViewModel pageViewModel;
 
-    public static NewAppointmentFragment newInstance(int index) {
+    public static NewAppointmentFragment newInstance(Citizen citizen) {
         NewAppointmentFragment fragment = new NewAppointmentFragment();
         Bundle bundle = new Bundle();
         //bundle.putInt(ARG_SECTION_NUMBER, index);

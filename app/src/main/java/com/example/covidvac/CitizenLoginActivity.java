@@ -81,7 +81,7 @@ public class CitizenLoginActivity extends AppCompatActivity {
             String tax_id = etTaxId.getText().toString().trim();
             String birthdate = etBirthDate.getText().toString().trim();
             DatabaseReference cref = db.getReference("Citizens");
- //           login(tax_id.trim(), birthdate.trim());
+
             Citizen citizen = new Citizen();
             citizen.login(cref, tax_id.trim(), birthdate.trim(), new CitizenCallback() {
                 @Override
