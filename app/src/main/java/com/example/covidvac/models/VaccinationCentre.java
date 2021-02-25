@@ -1,15 +1,22 @@
 package com.example.covidvac.models;
 
+import android.location.Location;
+import android.location.LocationManager;
+
 import androidx.annotation.NonNull;
 
 import com.example.covidvac.interfaces.VaccinationCentreCallback;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class VaccinationCentre {
 
@@ -61,12 +68,10 @@ public class VaccinationCentre {
         return longitude;
     }
 
-    public static void getVacCe(final VaccinationCentreCallback callback){
+    public static void getVacCe(DatabaseReference vcRef, final VaccinationCentreCallback callback){
 
         ArrayList<VaccinationCentre> vacCen = new ArrayList<VaccinationCentre>();
 
-        db = FirebaseDatabase.getInstance();
-        DatabaseReference vcRef = db.getReference("VaccinationCentre");
 
         vcRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -97,6 +102,35 @@ public class VaccinationCentre {
 
             }
         });
+
+    }
+
+    public float getDistance(LatLng latlng){
+
+        Location loc1 = new Location("");
+        Location loc2 = new Location("");
+
+        loc1.setLatitude(latlng.latitude);
+        loc1.setLongitude(latlng.longitude);
+
+        loc2.setLatitude(this.latitude);
+        loc2.setLongitude(this.longitude);
+
+
+
+        return loc1.distanceTo(loc2);
+
+    }
+
+    public static ArrayList<Map.Entry<VaccinationCentre,Float>> getSortedDistances(ArrayList<VaccinationCentre> centres, LatLng latlng){
+        ArrayList sortedVac = new ArrayList<Map.Entry<VaccinationCentre,Float>>();
+        for(VaccinationCentre centre : centres){
+            float distance = centre.getDistance(latlng);
+            sortedVac.add(new AbstractMap.SimpleEntry<VaccinationCentre,Float>(centre,distance));
+        }
+        sortedVac.sort(Map.Entry.comparingByValue());
+
+        return sortedVac;
 
     }
 

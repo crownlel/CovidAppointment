@@ -23,6 +23,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
@@ -45,6 +46,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        db = FirebaseDatabase.getInstance();
+
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
     }
@@ -66,7 +69,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             enableUserLoc();
             zoomUserLoc();
-            VaccinationCentre.getVacCe(new VaccinationCentreCallback(){
+            DatabaseReference vcRef = db.getReference("VaccinationCentre");
+            VaccinationCentre.getVacCe(vcRef, new VaccinationCentreCallback(){
                 @Override
                 public void setVacCeList(ArrayList<VaccinationCentre> centres) {
                     markerPlacement(centres);
