@@ -11,12 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.covidvac.R;
-import com.example.covidvac.interfaces.AppointmentCallback;
-import com.example.covidvac.models.Appointment;
 import com.example.covidvac.models.Citizen;
 import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.

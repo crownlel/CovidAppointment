@@ -11,13 +11,16 @@ import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.location.Location;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -25,6 +28,7 @@ import androidx.fragment.app.Fragment;
 import com.example.covidvac.R;
 import com.example.covidvac.interfaces.LocationCallback;
 import com.example.covidvac.interfaces.VaccinationCentreListCallback;
+import com.example.covidvac.models.Appointment;
 import com.example.covidvac.models.Citizen;
 import com.example.covidvac.models.VaccinationCentre;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -32,6 +36,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.ParseException;
@@ -53,6 +58,22 @@ public class NewAppointmentFragment extends Fragment {
     FusedLocationProviderClient fusedLocationProviderClient;
     FirebaseDatabase db;
 
+    TextView formNameIn;
+    EditText formVCentre;
+    TextView formIncuranceIn;
+    TextView formBDateIn;
+    TextView formIDIn;
+    TextView formTelephoneIn;
+    EditText formFirstAppointmentDate;
+    TextView formSecondAppointmentDate;
+    EditText formDateHour;
+    Button formMakeAppointment;
+    ArrayList<VaccinationCentre> vacCeList;
+    ArrayList<String> datehours;
+
+
+
+
     //private PageViewModel pageViewModel;
 
     public static NewAppointmentFragment newInstance(Citizen citizen) {
@@ -70,15 +91,20 @@ public class NewAppointmentFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //pageViewModel = new ViewModelProvider(this).get(PageViewModel.class);
-//        int index = 1;
-//        if (getArguments() != null) {
-//            index = getArguments().getInt(ARG_SECTION_NUMBER);
-//        }
-        //pageViewModel.setIndex(index);
+
         db = FirebaseDatabase.getInstance();
         citizen = (Citizen) getArguments().getSerializable(ARG_CITIZEN);
         sharedPref = getActivity().getApplicationContext().getSharedPreferences("FORM_PREFS", Context.MODE_PRIVATE);
+
+        datehours = new ArrayList<String>();
+        datehours.add("10:00");
+        datehours.add("10:30");
+        datehours.add("11:00");
+        datehours.add("11:30");
+        datehours.add("12:00");
+        datehours.add("12:30");
+        datehours.add("13:00");
+        datehours.add("13:30");
 
     }
 
@@ -89,7 +115,7 @@ public class NewAppointmentFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_appointment_form, container, false);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(view.getContext());
 
-        EditText formVCentre = view.findViewById(R.id.etFormVCentreIn);
+        formVCentre = view.findViewById(R.id.etFormVCentreIn);
 
         if(ContextCompat.checkSelfPermission(view.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
@@ -102,6 +128,7 @@ public class NewAppointmentFragment extends Fragment {
                         @Override
                         public void setVacCeList(ArrayList<VaccinationCentre> centres) {
                             ArrayList<Map.Entry<VaccinationCentre,Float>> sortedVCentres = VaccinationCentre.getSortedDistances(centres, latLng);
+                            vacCeList = centres;
                             VaccinationCentre nearest = sortedVCentres.get(0).getKey();
                             formVCentre.setText(nearest.getName() + " " + getResources().getString(R.string.nearestVacCentre));
 
@@ -118,25 +145,28 @@ public class NewAppointmentFragment extends Fragment {
         }
 
 
-        EditText formFirstAppointmentDate = view.findViewById(R.id.formFirstAppointmentDateIn);
-        TextView formSecondAppointmentDate = view.findViewById(R.id.formSecondAppointmentDateIn);
+        formFirstAppointmentDate = view.findViewById(R.id.edFormFirstAppointmentDateIn);
+        formSecondAppointmentDate = view.findViewById(R.id.formSecondAppointmentDateIn);
 
         //
-        TextView formNameIn = view.findViewById(R.id.tvFormNameIn);
+        formNameIn = view.findViewById(R.id.tvFormNameIn);
         formNameIn.setText(citizen.getName());
         //
-        TextView formIncuranceIn = view.findViewById(R.id.tvFormInsuranceIn);
+        formIncuranceIn = view.findViewById(R.id.tvFormInsuranceIn);
         formIncuranceIn.setText(citizen.getTax_id());
         //
-        TextView formBDateIn = view.findViewById(R.id.tvFormBDateIn);
+        formBDateIn = view.findViewById(R.id.tvFormBDateIn);
         formBDateIn.setText(citizen.getBirthdayToString());
         //
-        TextView formIDIn = view.findViewById(R.id.tvFormIDIn);
+        formIDIn = view.findViewById(R.id.tvFormIDIn);
         formIDIn.setText(citizen.getId_number());
         //
-        TextView formTelephoneIn = view.findViewById(R.id.tvFormTelephoneIn);
+        formTelephoneIn = view.findViewById(R.id.tvFormTelephoneIn);
         formTelephoneIn.setText(citizen.getTelephone());
         //
+        formMakeAppointment = view.findViewById(R.id.btMakeAppointment);
+        formDateHour = view.findViewById(R.id.etFormDateHoursIn);
+
 
 
 
@@ -151,33 +181,23 @@ public class NewAppointmentFragment extends Fragment {
                 if(ContextCompat.checkSelfPermission(view.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
                     Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
-                    locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                            VaccinationCentre.getVacCe(db.getReference("VaccinationCentre"), new VaccinationCentreListCallback(){
-                                @Override
-                                public void setVacCeList(ArrayList<VaccinationCentre> centres) {
-                                    ArrayList<Map.Entry<VaccinationCentre,Float>> sortedVCentres = VaccinationCentre.getSortedDistances(centres, latLng);
-                                    RadioGroup rgCentres = dCentres.findViewById(R.id.rgVCentres);
-                                    for (Map.Entry<VaccinationCentre,Float> centre : sortedVCentres){
-                                        RadioButton rb = new RadioButton(view.getContext());
-                                        rb.setText(centre.getKey().getName() + "\n" + Math.round(centre.getValue()) + "m" );
-                                        rgCentres.addView(rb);
-                                        rb.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                formVCentre.setText(rb.getText().toString().split("\n")[0]); //Removes meters after new line!
-                                                dCentres.hide();
-                                            }
-                                        });
-                                    }
+                    locationTask.addOnSuccessListener(location -> {
+                        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
+                        VaccinationCentre.getVacCe(db.getReference("VaccinationCentre"), centres -> {
+                            ArrayList<Map.Entry<VaccinationCentre,Float>> sortedVCentres = VaccinationCentre.getSortedDistances(centres, latLng);
+                            RadioGroup rgCentres = dCentres.findViewById(R.id.rgVCentres);
+                            for (Map.Entry<VaccinationCentre,Float> centre : sortedVCentres){
+                                RadioButton rb = new RadioButton(view.getContext());
+                                rb.setText(centre.getKey().getName() + "\n" + Math.round(centre.getValue()) + "m" );
+                                rgCentres.addView(rb);
 
-
-                                }
-                            });
-                        }
+                                rb.setOnClickListener(v1 -> {
+                                    formVCentre.setText(rb.getText().toString().split("\n")[0]); //Removes meters after new line!
+                                    dCentres.hide();
+                                });
+                            }
+                        });
                     });
                 } else {
                     requestPermissions( new String[] {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, ACCESS_LOCATION_REQUEST_CODE);
@@ -242,7 +262,88 @@ public class NewAppointmentFragment extends Fragment {
                     myCalendar.get(Calendar.DAY_OF_MONTH)).show();
         });
 
+        formDateHour.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Dialog dHours = new Dialog(view.getContext());
+                dHours.setContentView(R.layout.dialog_date_hours);
+                dHours.show();
+
+                RadioGroup rgDateHours = dHours.findViewById(R.id.rgDateHours);
+                for(String dhours : datehours){
+                    RadioButton rb = new RadioButton(view.getContext());
+                    rb.setText(dhours);
+
+                    rgDateHours.addView(rb);
+                    rb.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            formDateHour.setText(rb.getText());
+                            dHours.hide();
+                        }
+                    });
+                }
+
+                //dHours.show();
+
+            }
+        });
+
+        formMakeAppointment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatabaseReference appointmentRef = db.getReference().child("Appointments");
+                ArrayList<VaccinationCentre> centres = vacCeList;
+                // String name = formNameIn.getText().toString();
+                // String id = formIDIn.getText().toString();
+                // String insurance = formIncuranceIn.getText().toString();
+                // String birthdate = formBDateIn.getText().toString();
+                // String telephone = formTelephoneIn.getText().toString();
+                int isApproved = 0;
+                int isCanceled = 0;
+                String parent_id = "";
+
+
+                String date1 = new String(formFirstAppointmentDate.getText().toString() + " " + formDateHour.getText().toString());
+                String date2 = new String(formSecondAppointmentDate.getText().toString() + " " + formDateHour.getText().toString());
+
+
+                int citizen_id = citizen.getId();
+                int centre_id = 0;
+                for (VaccinationCentre centre : centres) {
+                    if (centre.getName().equals(formVCentre.getText().toString())) {
+                        centre_id = centre.getId();
+                        break;
+                    }
+                }
+                if (centre_id == 0) {
+                    return;
+                }
+
+                Appointment newAppointment = new Appointment(date1, isApproved, isCanceled, centre_id, citizen_id, parent_id);
+
+                newAppointment.save(appointmentRef, appointment -> {
+                    Appointment secondApp = makeAppointment(appointmentRef, Integer.toString(appointment.getId()));
+                    secondApp.save(appointmentRef,appointment1 -> {return;});
+                });
+
+
+
+                /*
+                DatabaseReference newAppointmentRef =  appointmentRef.push();
+
+
+                newAppointmentRef.setValue(newAppointment);
+
+                parent_id = newAppointmentRef.getKey();
+
+                makeAppointment(appointmentRef, parent_id); */
+                Toast.makeText(view.getContext(), "Appointment Submited",Toast.LENGTH_SHORT).show();
+            }
+        });
+
         return view;
+
     }
 
     private void formVacCelist (ArrayList<VaccinationCentre> vacCe, final LocationCallback callback){
@@ -261,5 +362,39 @@ public class NewAppointmentFragment extends Fragment {
 
             }
         });
+
+
+      }
+
+    private Appointment makeAppointment(DatabaseReference dbrf ,String p_id) {
+
+        // String name = formNameIn.getText().toString();
+        // String id = formIDIn.getText().toString();
+        // String insurance = formIncuranceIn.getText().toString();
+        // String birthdate = formBDateIn.getText().toString();
+        // String telephone = formTelephoneIn.getText().toString();
+        int isApproved = 0;
+        int isCanceled = 0;
+
+
+
+        //String date1 = new String(formFirstAppointmentDate.getText().toString() + " " + formDateHour.getText().toString());
+        String date2 = new String(formSecondAppointmentDate.getText().toString() + " " + formDateHour.getText().toString());
+
+
+        int citizen_id = citizen.getId();
+        int centre_id = 0;
+        for (VaccinationCentre centre : vacCeList) {
+            if (centre.getName().equals(formVCentre.getText().toString())) {
+                centre_id = centre.getId();
+                break;
+            }
+        }
+        if (centre_id == 0) {
+            //fak
+        }
+
+        return new Appointment(date2, isApproved, isCanceled, centre_id, citizen_id, p_id);
     }
+
 }

@@ -2,7 +2,7 @@ package com.example.covidvac.models;
 
 import androidx.annotation.NonNull;
 
-import com.example.covidvac.interfaces.AppointmentCallback;
+import com.example.covidvac.interfaces.AppointmentListCallback;
 import com.example.covidvac.interfaces.CitizenLoginCallback;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
@@ -138,7 +138,7 @@ public class Citizen implements Serializable {
         }
     }
 
-    public void getAppointments(DatabaseReference appRef, final AppointmentCallback callback){
+    public void getAppointments(DatabaseReference appRef, final AppointmentListCallback callback){
         Appointment.getCitizenAppointments(appRef, id, callback);
     }
 }

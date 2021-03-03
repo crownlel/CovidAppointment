@@ -3,8 +3,9 @@ package com.example.covidvac.models;
 import androidx.annotation.NonNull;
 
 import com.example.covidvac.interfaces.AppointmentCallback;
+import com.example.covidvac.interfaces.AppointmentListCallback;
 import com.example.covidvac.interfaces.CitizenCallback;
-import com.example.covidvac.interfaces.CitizenLoginCallback;
+
 import com.example.covidvac.interfaces.VaccinationCentreCallback;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,6 +30,19 @@ public class Appointment implements Serializable {
     private int centre_id;
     private int citizen_id;
     private String parent_id;
+
+    public Appointment() {
+    }
+
+    public Appointment(String date, int isApproved, int isCanceled, int centre_id, int citizen_id, String parent_id) {
+        this.date = date;
+        this.isApproved = isApproved;
+        this.isCanceled = isCanceled;
+        this.centre_id = centre_id;
+        this.citizen_id = citizen_id;
+        this.parent_id = parent_id;
+    }
+
 
     //region Getters
     public int getId() {
@@ -111,7 +125,7 @@ public class Appointment implements Serializable {
 
     public void getCentre(VaccinationCentreCallback callback){
         FirebaseDatabase db = FirebaseDatabase.getInstance();
-        db.getReference("VaccinationCentre").orderByKey().equalTo("id_" + citizen_id).addListenerForSingleValueEvent(new ValueEventListener() {
+        db.getReference("VaccinationCentre").orderByKey().equalTo("id_" + centre_id).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot sn : snapshot.getChildren()){
@@ -163,7 +177,7 @@ public class Appointment implements Serializable {
         });
     }
 
-    public static void getCitizenAppointments(DatabaseReference appRef, int cit_id, final AppointmentCallback callback){
+    public static void getCitizenAppointments(DatabaseReference appRef, int cit_id, final AppointmentListCallback callback){
 
         appRef.orderByChild("citizen_id").equalTo(cit_id).addValueEventListener(new ValueEventListener() {
             @Override
@@ -172,8 +186,10 @@ public class Appointment implements Serializable {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
                     Appointment app = snapshot.getValue(Appointment.class);
+
                     String key = snapshot.getKey();
                     app.id = Integer.parseInt(key.substring(3)); //skips "id_"
+
                     list.add(app);
                 }
                 callback.citizenAppointmentsCalled(list);
@@ -186,7 +202,7 @@ public class Appointment implements Serializable {
         });
     }
 
-    public static void getCentreAppointments(DatabaseReference appRef, int cen_id, final AppointmentCallback callback){
+    public static void getCentreAppointments(DatabaseReference appRef, int cen_id, final AppointmentListCallback callback){
 
         appRef.orderByChild("centre_id").equalTo(cen_id).addValueEventListener(new ValueEventListener() {
             @Override
@@ -195,8 +211,10 @@ public class Appointment implements Serializable {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
                     Appointment app = snapshot.getValue(Appointment.class);
+
                     String key = snapshot.getKey();
                     app.id = Integer.parseInt(key.substring(3)); //skips "id_"
+
                     list.add(app);
                 }
                 callback.citizenAppointmentsCalled(list);
@@ -219,7 +237,7 @@ public class Appointment implements Serializable {
             final public String parent_id = getParent_id();
         };
     }
-    public void Save(DatabaseReference appRef){
+    public void save(DatabaseReference appRef, AppointmentCallback callback){
         //save new
         Map<String, Object> appointmentUpdates = new HashMap<>();
 
@@ -231,7 +249,7 @@ public class Appointment implements Serializable {
                     FirebaseDatabase.getInstance().getReference("Ids/Appointments").setValue(id+1);
                     appointmentUpdates.put("id_" + id, toObject());
                     appRef.child("id_" + id).setValue(toObject());
-                    //appRef.setValue(appointmentUpdates);
+                    callback.appointmentFetched(Appointment.this);
                 }
 
                 @Override
@@ -244,6 +262,7 @@ public class Appointment implements Serializable {
         else {
             appointmentUpdates.put("id_" + id, toObject());
             appRef.updateChildren(appointmentUpdates);
+            callback.appointmentFetched(Appointment.this);
         }
     }
 }

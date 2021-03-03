@@ -25,6 +25,7 @@
     <string name="formVCentresIn">Choose Vaccination Centre: </string>
     <string name="nearestVacCentre">(Closest to you)</string>
     <string name="btMakeAppointment">Submit</string>
+    <string name="formDateHour">Hour: </string>
     <string name="dialog_edit_appointment_btnApprove">Approve</string>
     <string name="dialog_edit_appointment_btnReject">Reject</string>
     <string name="dialog_edit_appointment_btnCancel">Cancel</string>
