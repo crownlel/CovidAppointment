@@ -11,7 +11,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 
-import com.example.covidvac.interfaces.VaccinationCentreCallback;
+import com.example.covidvac.interfaces.VaccinationCentreListCallback;
 import com.example.covidvac.models.VaccinationCentre;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -70,7 +70,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             enableUserLoc();
             zoomUserLoc();
             DatabaseReference vcRef = db.getReference("VaccinationCentre");
-            VaccinationCentre.getVacCe(vcRef, new VaccinationCentreCallback(){
+            VaccinationCentre.getVacCe(vcRef, new VaccinationCentreListCallback(){
                 @Override
                 public void setVacCeList(ArrayList<VaccinationCentre> centres) {
                     markerPlacement(centres);

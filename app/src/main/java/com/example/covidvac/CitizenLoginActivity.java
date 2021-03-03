@@ -1,7 +1,5 @@
 package com.example.covidvac;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
@@ -12,26 +10,15 @@ import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.os.Bundle;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.covidvac.interfaces.CitizenCallback;
+import com.example.covidvac.interfaces.CitizenLoginCallback;
 import com.example.covidvac.models.Citizen;
-import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.Callable;
 
 public class CitizenLoginActivity extends AppCompatActivity {
 
@@ -83,7 +70,7 @@ public class CitizenLoginActivity extends AppCompatActivity {
             DatabaseReference cref = db.getReference("Citizens");
 
             Citizen citizen = new Citizen();
-            citizen.login(cref, tax_id.trim(), birthdate.trim(), new CitizenCallback() {
+            citizen.login(cref, tax_id.trim(), birthdate.trim(), new CitizenLoginCallback() {
                 @Override
                 public void loginCalled(boolean success) {
 

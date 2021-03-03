@@ -22,4 +22,7 @@
     <string name="formVCentresIn">Επιλέξτε Κέντρο Εμβολιασμών: </string>
     <string name="nearestVacCentre">(Πλησιέστερο σε εσάς)</string>
     <string name="btMakeAppointment">Υποβολλή</string>
+    <string name="dialog_edit_appointment_btnApprove">Αποδοχή</string>
+    <string name="dialog_edit_appointment_btnReject">Απόρριξη</string>
+    <string name="dialog_edit_appointment_btnCancel">Ακύρωση</string>
 </resources>

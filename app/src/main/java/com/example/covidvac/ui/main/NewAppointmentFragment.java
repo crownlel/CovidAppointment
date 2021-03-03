@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,12 +24,11 @@ import androidx.fragment.app.Fragment;
 
 import com.example.covidvac.R;
 import com.example.covidvac.interfaces.LocationCallback;
-import com.example.covidvac.interfaces.VaccinationCentreCallback;
+import com.example.covidvac.interfaces.VaccinationCentreListCallback;
 import com.example.covidvac.models.Citizen;
 import com.example.covidvac.models.VaccinationCentre;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -100,7 +98,7 @@ public class NewAppointmentFragment extends Fragment {
                 @Override
                 public void onSuccess(Location location) {
                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                    VaccinationCentre.getVacCe(db.getReference("VaccinationCentre"), new VaccinationCentreCallback(){
+                    VaccinationCentre.getVacCe(db.getReference("VaccinationCentre"), new VaccinationCentreListCallback(){
                         @Override
                         public void setVacCeList(ArrayList<VaccinationCentre> centres) {
                             ArrayList<Map.Entry<VaccinationCentre,Float>> sortedVCentres = VaccinationCentre.getSortedDistances(centres, latLng);
@@ -157,7 +155,7 @@ public class NewAppointmentFragment extends Fragment {
                         @Override
                         public void onSuccess(Location location) {
                             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                            VaccinationCentre.getVacCe(db.getReference("VaccinationCentre"), new VaccinationCentreCallback(){
+                            VaccinationCentre.getVacCe(db.getReference("VaccinationCentre"), new VaccinationCentreListCallback(){
                                 @Override
                                 public void setVacCeList(ArrayList<VaccinationCentre> centres) {
                                     ArrayList<Map.Entry<VaccinationCentre,Float>> sortedVCentres = VaccinationCentre.getSortedDistances(centres, latLng);
@@ -184,7 +182,7 @@ public class NewAppointmentFragment extends Fragment {
                 } else {
                     requestPermissions( new String[] {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, ACCESS_LOCATION_REQUEST_CODE);
                     //Opens dialog with no distance sorting!
-                    VaccinationCentre.getVacCe(db.getReference("VaccinationCentre"), new VaccinationCentreCallback(){
+                    VaccinationCentre.getVacCe(db.getReference("VaccinationCentre"), new VaccinationCentreListCallback(){
                         @Override
                         public void setVacCeList(ArrayList<VaccinationCentre> centres) {
                             RadioGroup rgCentres = dCentres.findViewById(R.id.rgVCentres);

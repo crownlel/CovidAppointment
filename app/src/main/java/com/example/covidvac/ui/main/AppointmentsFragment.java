@@ -64,13 +64,10 @@ public class AppointmentsFragment extends Fragment {
         rvAppointments.setLayoutManager(new LinearLayoutManager(view.getContext()));
         citizen.getAppointments(
                 FirebaseDatabase.getInstance().getReference("Appointments"),
-                        new AppointmentCallback() {
-                            @Override
-                            public void citizenAppointmentsCalled(ArrayList<Appointment> appointments) {
-                                final AppointmentAdapter adapter = new AppointmentAdapter(view.getContext(), appointments);
-                                rvAppointments.setAdapter(adapter);
-                            }
-                        });
+                appointments -> {
+                    final AppointmentAdapter adapter = new AppointmentAdapter(view.getContext(), appointments);
+                    rvAppointments.setAdapter(adapter);
+                });
         return view;
     }
 }

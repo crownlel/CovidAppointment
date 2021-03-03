@@ -3,25 +3,19 @@ package com.example.covidvac.models;
 import androidx.annotation.NonNull;
 
 import com.example.covidvac.interfaces.AppointmentCallback;
-import com.example.covidvac.interfaces.CitizenCallback;
+import com.example.covidvac.interfaces.CitizenLoginCallback;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
-import  java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.concurrent.Semaphore;
-
-import javax.security.auth.callback.Callback;
 
 
 public class Citizen implements Serializable {
@@ -83,7 +77,7 @@ public class Citizen implements Serializable {
 //endregion
 
 
-    public void login(DatabaseReference citRef, String tax_id, String birthday, final CitizenCallback callback) {
+    public void login(DatabaseReference citRef, String tax_id, String birthday, final CitizenLoginCallback callback) {
 
         try {
 

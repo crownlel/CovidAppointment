@@ -1,11 +1,10 @@
 package com.example.covidvac.models;
 
 import android.location.Location;
-import android.location.LocationManager;
 
 import androidx.annotation.NonNull;
 
-import com.example.covidvac.interfaces.VaccinationCentreCallback;
+import com.example.covidvac.interfaces.VaccinationCentreListCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -15,7 +14,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 public class VaccinationCentre {
@@ -68,7 +66,7 @@ public class VaccinationCentre {
         return longitude;
     }
 
-    public static void getVacCe(DatabaseReference vcRef, final VaccinationCentreCallback callback){
+    public static void getVacCe(DatabaseReference vcRef, final VaccinationCentreListCallback callback){
 
         ArrayList<VaccinationCentre> vacCen = new ArrayList<VaccinationCentre>();
 
@@ -83,9 +81,6 @@ public class VaccinationCentre {
                         String key = snapshot.getKey();
                         vaccinationCentre.id = Integer.parseInt(key.substring(3));
                         vacCen.add(vaccinationCentre);
-
-
-
                     }
 
                     callback.setVacCeList(vacCen);
