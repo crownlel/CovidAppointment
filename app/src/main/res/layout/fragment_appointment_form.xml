@@ -148,6 +148,7 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:focusable="false"
+                android:hint="@string/hoursHint"
                 android:inputType="textPersonName"
                 android:textSize="24sp" />
 
@@ -174,6 +175,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="25sp"
+                android:enabled="false"
                 android:text="@string/btMakeAppointment" />
         </LinearLayout>
 

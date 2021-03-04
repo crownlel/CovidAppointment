@@ -12,6 +12,8 @@ import android.icu.util.Calendar;
 import android.location.Location;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -130,7 +132,7 @@ public class NewAppointmentFragment extends Fragment {
                             ArrayList<Map.Entry<VaccinationCentre,Float>> sortedVCentres = VaccinationCentre.getSortedDistances(centres, latLng);
                             vacCeList = centres;
                             VaccinationCentre nearest = sortedVCentres.get(0).getKey();
-                            formVCentre.setText(nearest.getName() + " " + getResources().getString(R.string.nearestVacCentre));
+                            formVCentre.setHint(nearest.getName() + " \n" + getResources().getString(R.string.nearestVacCentre));
 
 
                         }
@@ -283,11 +285,14 @@ public class NewAppointmentFragment extends Fragment {
                         }
                     });
                 }
-
-                //dHours.show();
-
             }
         });
+
+        //Checking if the form is completed
+        formFirstAppointmentDate.addTextChangedListener(submitEnalbed);
+        formSecondAppointmentDate.addTextChangedListener(submitEnalbed);
+        formVCentre.addTextChangedListener(submitEnalbed);
+        formDateHour.addTextChangedListener(submitEnalbed);
 
         formMakeAppointment.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -405,5 +410,28 @@ public class NewAppointmentFragment extends Fragment {
 
         return new Appointment(date2, isApproved, isCanceled, centre_id, citizen_id, p_id);
     }
+
+    //Submit button enabled when the form is complete
+    private TextWatcher submitEnalbed = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            String firstApp = formFirstAppointmentDate.getText().toString().trim();
+            String seccondApp = formSecondAppointmentDate.getText().toString().trim();
+            String hour = formDateHour.getText().toString().trim();
+            String centre = formVCentre.getText().toString().trim();
+
+            formMakeAppointment.setEnabled(!firstApp.isEmpty() && !seccondApp.isEmpty() && !hour.isEmpty() && !centre.isEmpty());
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
 
 }
