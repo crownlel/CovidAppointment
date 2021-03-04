@@ -34,6 +34,10 @@
     <string name="employee_login_password">Password</string>
     <string name="employee_login_username_hint">Enter username</string>
     <string name="employee_login_password_hint">Enter password</string>
+    <string name="notAvailableDate">Not Available date.</string>
+    <string name="submitSuccess">Appointment Submited.</string>
+    <string name="appAlreadyExist">You have already an Appointment.</string>
+    <string name="mapCentres">Vaccination Centres locations</string>
     <string name="main_manage">Manage</string>
     <string name="employee_main_btn_accepted">Confirmed</string>
     <string name="employee_main_btn_pending">Pending</string>

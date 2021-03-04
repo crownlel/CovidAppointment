@@ -31,6 +31,10 @@
     <string name="employee_login_password">Κωδικός</string>
     <string name="employee_login_username_hint">Εισάγετε όνομα χρήστη</string>
     <string name="employee_login_password_hint">Εισάγετε κωδικό</string>
+    <string name="notAvailableDate">Μη διαθέσιμη ημερομηνία.</string>
+    <string name="submitSuccess">Υποβλήθηκε ραντεβού.</string>
+    <string name="appAlreadyExist">"Έχετε κλείσει ήδη ραντεβού. "</string>
+    <string name="mapCentres">Tοποθεσίες Κέντρων Εμβολιασμών</string>
     <string name="main_manage">Διαχείρηση</string>
     <string name="employee_main_btn_accepted">Επιβεβαιωμένα</string>
     <string name="employee_main_btn_pending">Προς Έγκριση</string>

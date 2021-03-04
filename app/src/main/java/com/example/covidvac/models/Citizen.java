@@ -1,14 +1,19 @@
 package com.example.covidvac.models;
 
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 
+import com.example.covidvac.R;
 import com.example.covidvac.interfaces.AppointmentListCallback;
+import com.example.covidvac.interfaces.BooleanCallBack;
 import com.example.covidvac.interfaces.LoginCallback;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.Serializable;
@@ -141,5 +146,19 @@ public class Citizen implements Serializable {
     public void getAppointments(DatabaseReference appRef, final AppointmentListCallback callback){
 
         Appointment.getCitizenAppointments(appRef, id, callback);
+    }
+
+    public void canSubmit(final BooleanCallBack callBack){
+        Appointment.getCitizenAppointments(FirebaseDatabase.getInstance().getReference("Appointments"), id, appointments -> {
+
+            for(Appointment app : appointments){
+                if(!app.getIsCanceledToBool()){
+                    callBack.boolFetched(false);
+                    return;
+                }
+            }
+            callBack.boolFetched(true);
+        });
+
     }
 }

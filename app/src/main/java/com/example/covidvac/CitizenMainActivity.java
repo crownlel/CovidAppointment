@@ -117,4 +117,11 @@ public class CitizenMainActivity extends AppCompatActivity {
         itemLayout.addView(itemView);
         filterDialog.show();
     }
+    public void mapView(View view) {
+
+        Intent maps = new Intent(this, MapsActivity.class);
+
+        startActivity(maps);
+
+    }
 }

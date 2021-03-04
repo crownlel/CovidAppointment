@@ -59,9 +59,14 @@ public class CitizenLoginActivity extends AppCompatActivity {
         };
 
         etBirthDate.setOnClickListener(v -> {
-            new DatePickerDialog(this, date, myCalendar
+          DatePickerDialog datePicker =  new DatePickerDialog(this, date, myCalendar
                     .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                    myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                    myCalendar.get(Calendar.DAY_OF_MONTH));
+            Calendar c = Calendar.getInstance();
+            c.add(Calendar.HOUR,-24);
+            Long yesterday = c.getTimeInMillis();
+            datePicker.getDatePicker().setMaxDate(yesterday);
+            datePicker.show();
         });
 
         //login

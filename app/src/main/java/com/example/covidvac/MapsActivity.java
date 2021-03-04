@@ -31,10 +31,12 @@ import java.util.ArrayList;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+
     FirebaseDatabase db;
 
     /*Unique Key*/
     private int ACCESS_LOCATION_REQUEST_CODE = 10001;
+
     FusedLocationProviderClient fusedLocationProviderClient;
 
     @Override
@@ -47,9 +49,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         db = FirebaseDatabase.getInstance();
-
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
     }
 
     /**
@@ -63,6 +63,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
         mMap = googleMap;
 
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -76,8 +77,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     markerPlacement(centres);
                 }
             });
-
-
         } else {
             if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
 
@@ -85,17 +84,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             } else{
                 ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_LOCATION_REQUEST_CODE);
             }
-
         }
-
-
-
-        // Add a marker in Sydney and move the camera
-        // LatLng sydney = new LatLng(-34, 151);
-        // mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        // mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
-
 
     @SuppressLint("MissingPermission")
     private void enableUserLoc(){
@@ -114,7 +104,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13 ));
             }
         });
-
     }
 
     private void markerPlacement(ArrayList<VaccinationCentre> vacCe){
@@ -123,13 +112,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 LatLng latLng = new LatLng(vacCe.get(i).getLatitude(),vacCe.get(i).getLongitude());
                 mMap.addMarker(new MarkerOptions().position(latLng).title(vacCe.get(i).getName()));
-
-
             }
-
-
-
-
     }
 
     @Override
@@ -138,10 +121,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             if(grantResults.length > 0 && grantResults[0]  == PackageManager.PERMISSION_GRANTED){
                 enableUserLoc();
             } else {
+
             }
         }else{
+
             super.onRequestPermissionsResult(requestCode,permissions, grantResults);
         }
     }
-
 }

@@ -191,8 +191,13 @@ public class NewAppointmentFragment extends Fragment {
                             RadioGroup rgCentres = dCentres.findViewById(R.id.rgVCentres);
                             for (Map.Entry<VaccinationCentre,Float> centre : sortedVCentres){
                                 RadioButton rb = new RadioButton(view.getContext());
-                                rb.setText(centre.getKey().getName() + "\n" + Math.round(centre.getValue()) + "m" );
-                                rgCentres.addView(rb);
+                                if(centre.getValue()>=1000){
+                                    rb.setText(centre.getKey().getName() + "\n" + round((double)Math.round(centre.getValue())/(double)1000,1) + " km");
+                                    rgCentres.addView(rb);
+                                }else{
+                                    rb.setText(centre.getKey().getName() + "\n" + Math.round(centre.getValue()) + " m");
+                                    rgCentres.addView(rb);
+                                }
 
                                 rb.setOnClickListener(v1 -> {
                                     formVCentre.setText(rb.getText().toString().split("\n")[0]); //Removes meters after new line!
@@ -233,6 +238,7 @@ public class NewAppointmentFragment extends Fragment {
         formFirstAppointmentDate.setText(date_n);
 
         final Calendar myCalendar = Calendar.getInstance();
+
         DatePickerDialog.OnDateSetListener date = (v, year, monthOfYear, dayOfMonth) -> {
             // TODO Auto-generated method stub
             myCalendar.set(Calendar.YEAR, year);
@@ -242,26 +248,32 @@ public class NewAppointmentFragment extends Fragment {
             String myFormat = "dd/MM/yyyy"; //In which you need put here
             SimpleDateFormat sdf = new SimpleDateFormat(myFormat, new Locale("el"));
 
-            formFirstAppointmentDate.setText(sdf.format(myCalendar.getTime()));
+                formFirstAppointmentDate.setText(sdf.format(myCalendar.getTime()));
 
-            try {
-                myCalendar.setTime(sdf.parse(String.valueOf(formFirstAppointmentDate)));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+                try {
+                    myCalendar.setTime(sdf.parse(String.valueOf(formFirstAppointmentDate)));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
 
-            myCalendar.add(Calendar.DATE, 28);
+                myCalendar.add(Calendar.DATE, 28);
 
-            SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MM/yyyy");
-            formSecondAppointmentDate.setText(sdf1.format(myCalendar.getTime()));
-
+                SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MM/yyyy");
+                formSecondAppointmentDate.setText(sdf1.format(myCalendar.getTime()));
+                myCalendar.add(Calendar.DATE, -28);
 
         };
 
         formFirstAppointmentDate.setOnClickListener(v -> {
-            new DatePickerDialog(view.getContext(), date, myCalendar
+
+            DatePickerDialog datePicker = new DatePickerDialog(view.getContext(), date, myCalendar
                     .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                    myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                    myCalendar.get(Calendar.DAY_OF_MONTH));
+            Calendar c = Calendar.getInstance();
+            c.add(Calendar.HOUR,24);
+            Long tomorrow = c.getTimeInMillis();
+            datePicker.getDatePicker().setMinDate(tomorrow);
+            datePicker.show();
         });
 
         formDateHour.setOnClickListener(new View.OnClickListener() {
@@ -299,22 +311,13 @@ public class NewAppointmentFragment extends Fragment {
             public void onClick(View v) {
                 DatabaseReference appointmentRef = db.getReference().child("Appointments");
                 ArrayList<VaccinationCentre> centres = vacCeList;
-                // String name = formNameIn.getText().toString();
-                // String id = formIDIn.getText().toString();
-                // String insurance = formIncuranceIn.getText().toString();
-                // String birthdate = formBDateIn.getText().toString();
-                // String telephone = formTelephoneIn.getText().toString();
                 int isApproved = 0;
                 int isCanceled = 0;
                 String parent_id = "";
-
-
-                String date1 = new String(formFirstAppointmentDate.getText().toString() + " " + formDateHour.getText().toString());
-                String date2 = new String(formSecondAppointmentDate.getText().toString() + " " + formDateHour.getText().toString());
-
-
+                String date1 = (formFirstAppointmentDate.getText().toString() + " " + formDateHour.getText().toString());
                 int citizen_id = citizen.getId();
                 int centre_id = 0;
+
                 for (VaccinationCentre centre : centres) {
                     if (centre.getName().equals(formVCentre.getText().toString())) {
                         centre_id = centre.getId();
@@ -325,34 +328,49 @@ public class NewAppointmentFragment extends Fragment {
                     return;
                 }
 
-                Appointment newAppointment = new Appointment(date1, isApproved, isCanceled, centre_id, citizen_id, parent_id);
+                int finalCentre_id = centre_id;
+                citizen.getAppointments(appointmentRef, appointments -> {
+                    for(Appointment app : appointments){
+                        if(!app.getIsCanceledToBool()){
+                            //TODO Toast exeis kleisei rantebou
+                            Toast.makeText(view.getContext(),getResources().getString(R.string.appAlreadyExist), Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+
+                });
+                Appointment newAppointment = new Appointment(date1, isApproved, isCanceled, finalCentre_id, citizen_id, parent_id);
 
                 newAppointment.save(appointmentRef, firstAppSaved -> {
 
                     if(firstAppSaved == null){
 
                         //TODO prompt not available date
+                        Toast.makeText(view.getContext(),getResources().getString(R.string.notAvailableDate), Toast.LENGTH_SHORT).show();
+
                     }
                     else{
 
-                        Appointment secondApp = makeAppointment(appointmentRef, Integer.toString(firstAppSaved.getId()));
+                        Appointment secondApp = makeAppointment(Integer.toString(firstAppSaved.getId()));
                         secondApp.save(appointmentRef, secAppSaved -> {
 
                             if (secAppSaved == null) {
 
                                 firstAppSaved.delete(appointmentRef);
                                 //TODO prompt not available date
+                                Toast.makeText(view.getContext(),getResources().getString(R.string.notAvailableDate), Toast.LENGTH_SHORT).show();
                             }
                             else {
 
                                 //TODO prompt successful appointment
+                                Toast.makeText(view.getContext(),getResources().getString(R.string.submitSuccess) ,Toast.LENGTH_SHORT).show();
                             }
                         });
                     }
 
                 });
 
-                Toast.makeText(view.getContext(), "Appointment Submited",Toast.LENGTH_SHORT).show();
+
             }
         });
 
@@ -380,24 +398,14 @@ public class NewAppointmentFragment extends Fragment {
 
       }
 
-    private Appointment makeAppointment(DatabaseReference dbrf ,String p_id) {
+    private Appointment makeAppointment(String p_id) {
 
-        // String name = formNameIn.getText().toString();
-        // String id = formIDIn.getText().toString();
-        // String insurance = formIncuranceIn.getText().toString();
-        // String birthdate = formBDateIn.getText().toString();
-        // String telephone = formTelephoneIn.getText().toString();
         int isApproved = 0;
         int isCanceled = 0;
-
-
-
-        //String date1 = new String(formFirstAppointmentDate.getText().toString() + " " + formDateHour.getText().toString());
-        String date2 = new String(formSecondAppointmentDate.getText().toString() + " " + formDateHour.getText().toString());
-
-
+        String date2 = (formSecondAppointmentDate.getText().toString() + " " + formDateHour.getText().toString());
         int citizen_id = citizen.getId();
         int centre_id = 0;
+
         for (VaccinationCentre centre : vacCeList) {
             if (centre.getName().equals(formVCentre.getText().toString())) {
                 centre_id = centre.getId();
@@ -405,7 +413,7 @@ public class NewAppointmentFragment extends Fragment {
             }
         }
         if (centre_id == 0) {
-            //fak
+
         }
 
         return new Appointment(date2, isApproved, isCanceled, centre_id, citizen_id, p_id);
@@ -433,5 +441,11 @@ public class NewAppointmentFragment extends Fragment {
 
         }
     };
+
+    private static double round (double value, int precision) {
+        int scale = (int) Math.pow(10, precision);
+        return (double) Math.round(value * scale) / scale;
+    }
+
 
 }
