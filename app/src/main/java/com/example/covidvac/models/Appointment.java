@@ -143,22 +143,6 @@ public class Appointment implements Serializable {
     public void getCentre(VaccinationCentreCallback callback){
 
         VaccinationCentre.getCentre(callback, centre_id);
-//        FirebaseDatabase db = FirebaseDatabase.getInstance();
-//        db.getReference("VaccinationCentre").orderByKey().equalTo("id_" + centre_id).addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                for (DataSnapshot sn : snapshot.getChildren()){
-//                    //assume there is only one child
-//                    VaccinationCentre centre = sn.getValue(VaccinationCentre.class);
-//                    callback.centreFetched(centre);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//
-//            }
-//        });
     }
 
     public void getCitizen(CitizenCallback callback){

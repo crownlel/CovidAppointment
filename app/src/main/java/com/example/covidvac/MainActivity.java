@@ -38,6 +38,12 @@ public class MainActivity extends AppCompatActivity {
             this.startActivity(getIntent());
             overridePendingTransition(0, 0);
         });
+
+        Button btnManage = findViewById(R.id.btnManage);
+        btnManage.setOnClickListener(v -> {
+            Intent intent = new Intent(this, EmployeeLoginActivity.class);
+            startActivity(intent);
+        });
     }
 
     public void mapView(View view) {

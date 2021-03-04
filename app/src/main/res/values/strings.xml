@@ -34,4 +34,8 @@
     <string name="employee_login_password">Password</string>
     <string name="employee_login_username_hint">Enter username</string>
     <string name="employee_login_password_hint">Enter password</string>
+    <string name="main_manage">Manage</string>
+    <string name="employee_main_btn_accepted">Confirmed</string>
+    <string name="employee_main_btn_pending">Pending</string>
+    <string name="employee_main_btn_all">Show all</string>
 </resources>

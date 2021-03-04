@@ -4,6 +4,7 @@ import android.location.Location;
 
 import androidx.annotation.NonNull;
 
+import com.example.covidvac.interfaces.AppointmentListCallback;
 import com.example.covidvac.interfaces.VaccinationCentreCallback;
 import com.example.covidvac.interfaces.VaccinationCentreListCallback;
 import com.google.android.gms.maps.model.LatLng;
@@ -75,6 +76,9 @@ public class VaccinationCentre {
                 for (DataSnapshot sn : snapshot.getChildren()){
                     //assume there is only one child
                     VaccinationCentre centre = sn.getValue(VaccinationCentre.class);
+
+                    String key = sn.getKey();
+                    centre.id = Integer.parseInt(key.substring(3)); //skips "id_"
                     callback.centreFetched(centre);
                 }
             }
@@ -145,5 +149,9 @@ public class VaccinationCentre {
 
     }
 
+    public void getAppointments(final AppointmentListCallback callback){
 
+        DatabaseReference appRef = FirebaseDatabase.getInstance().getReference("Appointments");
+        Appointment.getCentreAppointments(appRef, id, callback);
+    }
 }

@@ -1,10 +1,14 @@
 package com.example.covidvac;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,15 +18,20 @@ public class EmployeeLoginActivity extends AppCompatActivity {
 
     boolean isLoginIn = false;
     Button btnLogin;
+    SharedPreferences sharedPref;
+    final String USERNAME_KEY = "username";
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_employee_login);
 
+        sharedPref = getApplicationContext().getSharedPreferences("LOGIN_PREFS", Context.MODE_PRIVATE);
         EditText etUsername = findViewById(R.id.etUsername);
         EditText etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLoginEmp);
+
+        etUsername.setText(sharedPref.getString(USERNAME_KEY, ""));
 
         btnLogin.setEnabled(false);
         btnLogin.setOnClickListener(v -> login(etUsername.getText().toString().trim(),
@@ -68,13 +77,33 @@ public class EmployeeLoginActivity extends AppCompatActivity {
         employee.login(username, password, success -> {
 
             if (success){
-                //TODO next intent
+
+                Intent intent = new Intent(getApplicationContext(), EmployeeMainActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("employee", employee);
+                intent.putExtras(bundle);
+                startActivity(intent);
             }
             else {
-                //TODO display wrong password prompt
+
+                Toast.makeText(getApplicationContext(),
+                        getString(R.string.citizen_login_wrong_credentials), Toast.LENGTH_SHORT)
+                        .show();
             }
             isLoginIn = false;
             btnLogin.setEnabled(true);
         });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (sharedPref != null) {
+            SharedPreferences.Editor editor = sharedPref.edit();
+
+            EditText etUsername = findViewById(R.id.etUsername);
+            editor.putString(USERNAME_KEY, etUsername.getText().toString());
+            editor.apply();
+        }
     }
 }

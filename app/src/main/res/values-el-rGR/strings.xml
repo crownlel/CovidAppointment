@@ -31,4 +31,8 @@
     <string name="employee_login_password">Κωδικός</string>
     <string name="employee_login_username_hint">Εισάγετε όνομα χρήστη</string>
     <string name="employee_login_password_hint">Εισάγετε κωδικό</string>
+    <string name="main_manage">Διαχείρηση</string>
+    <string name="employee_main_btn_accepted">Επιβεβαιωμένα</string>
+    <string name="employee_main_btn_pending">Προς Έγκριση</string>
+    <string name="employee_main_btn_all">Εμφάνιση όλων</string>
 </resources>
