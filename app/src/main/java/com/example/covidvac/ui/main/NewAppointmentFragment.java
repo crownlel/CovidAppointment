@@ -10,6 +10,8 @@ import android.content.pm.PackageManager;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.Editable;
@@ -24,9 +26,11 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.covidvac.LocaleManager;
 import com.example.covidvac.R;
 import com.example.covidvac.interfaces.LocationCallback;
 import com.example.covidvac.interfaces.VaccinationCentreListCallback;
@@ -36,6 +40,7 @@ import com.example.covidvac.models.VaccinationCentre;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
@@ -59,7 +64,6 @@ public class NewAppointmentFragment extends Fragment {
     SharedPreferences sharedPref;
     FusedLocationProviderClient fusedLocationProviderClient;
     FirebaseDatabase db;
-
     TextView formNameIn;
     EditText formVCentre;
     TextView formIncuranceIn;
@@ -74,18 +78,10 @@ public class NewAppointmentFragment extends Fragment {
     ArrayList<String> datehours;
 
 
-
-
-    //private PageViewModel pageViewModel;
-
     public static NewAppointmentFragment newInstance(Citizen citizen) {
         NewAppointmentFragment fragment = new NewAppointmentFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable(ARG_CITIZEN, citizen );
-
-
-
-        //bundle.putInt(ARG_SECTION_NUMBER, index);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -123,33 +119,39 @@ public class NewAppointmentFragment extends Fragment {
 
             Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
             locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
+
                 @Override
                 public void onSuccess(Location location) {
+
                     LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                     VaccinationCentre.getVacCe(db.getReference("VaccinationCentre"), new VaccinationCentreListCallback(){
+
                         @Override
                         public void setVacCeList(ArrayList<VaccinationCentre> centres) {
+
                             ArrayList<Map.Entry<VaccinationCentre,Float>> sortedVCentres = VaccinationCentre.getSortedDistances(centres, latLng);
                             vacCeList = centres;
                             VaccinationCentre nearest = sortedVCentres.get(0).getKey();
                             formVCentre.setHint(nearest.getName() + " \n" + getResources().getString(R.string.nearestVacCentre));
-
-
                         }
                     });
-
                 }
             });
+            locationTask.addOnFailureListener(new OnFailureListener() {
 
+                @Override
+                public void onFailure(@NonNull Exception e) {
 
+                    Toast.makeText(view.getContext(),"Failed to get Location", Toast.LENGTH_SHORT).show();
+                }
+            });
         } else {
+
             requestPermissions( new String[] {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, ACCESS_LOCATION_REQUEST_CODE);
         }
 
-
         formFirstAppointmentDate = view.findViewById(R.id.edFormFirstAppointmentDateIn);
         formSecondAppointmentDate = view.findViewById(R.id.formSecondAppointmentDateIn);
-
         //
         formNameIn = view.findViewById(R.id.tvFormNameIn);
         formNameIn.setText(citizen.getName());
@@ -169,37 +171,37 @@ public class NewAppointmentFragment extends Fragment {
         formMakeAppointment = view.findViewById(R.id.btMakeAppointment);
         formDateHour = view.findViewById(R.id.etFormDateHoursIn);
 
-
-
-
         formVCentre.setOnClickListener(new View.OnClickListener(){
+
             @Override
             public void onClick(View v) {
-
-                    Dialog dCentres = new Dialog(view.getContext());
-                    dCentres.setContentView(R.layout.dialog_vcentres);
-                    dCentres.show();
-
+                Dialog dCentres = new Dialog(view.getContext());
+                dCentres.setContentView(R.layout.dialog_vcentres);
+                dCentres.show();
                 if(ContextCompat.checkSelfPermission(view.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
                     Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
                     locationTask.addOnSuccessListener(location -> {
-                        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
+                        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
                         VaccinationCentre.getVacCe(db.getReference("VaccinationCentre"), centres -> {
+
                             ArrayList<Map.Entry<VaccinationCentre,Float>> sortedVCentres = VaccinationCentre.getSortedDistances(centres, latLng);
                             RadioGroup rgCentres = dCentres.findViewById(R.id.rgVCentres);
                             for (Map.Entry<VaccinationCentre,Float> centre : sortedVCentres){
+
                                 RadioButton rb = new RadioButton(view.getContext());
                                 if(centre.getValue()>=1000){
+
                                     rb.setText(centre.getKey().getName() + "\n" + round((double)Math.round(centre.getValue())/(double)1000,1) + " km");
                                     rgCentres.addView(rb);
                                 }else{
+
                                     rb.setText(centre.getKey().getName() + "\n" + Math.round(centre.getValue()) + " m");
                                     rgCentres.addView(rb);
                                 }
-
                                 rb.setOnClickListener(v1 -> {
+
                                     formVCentre.setText(rb.getText().toString().split("\n")[0]); //Removes meters after new line!
                                     dCentres.hide();
                                 });
@@ -207,19 +209,25 @@ public class NewAppointmentFragment extends Fragment {
                         });
                     });
                 } else {
+
                     requestPermissions( new String[] {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, ACCESS_LOCATION_REQUEST_CODE);
                     //Opens dialog with no distance sorting!
                     VaccinationCentre.getVacCe(db.getReference("VaccinationCentre"), new VaccinationCentreListCallback(){
+
                         @Override
                         public void setVacCeList(ArrayList<VaccinationCentre> centres) {
+
                             RadioGroup rgCentres = dCentres.findViewById(R.id.rgVCentres);
                             for (VaccinationCentre centre : centres){
+
                                 RadioButton rb = new RadioButton(view.getContext());
                                 rb.setText(centre.getName());
                                 rgCentres.addView(rb);
                                 rb.setOnClickListener(new View.OnClickListener() {
+
                                     @Override
                                     public void onClick(View v) {
+
                                         formVCentre.setText(rb.getText());
                                         dCentres.hide();
                                     }
@@ -231,37 +239,28 @@ public class NewAppointmentFragment extends Fragment {
             }
         });
 
-
-
-
         String date_n = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
         formFirstAppointmentDate.setText(date_n);
-
         final Calendar myCalendar = Calendar.getInstance();
-
         DatePickerDialog.OnDateSetListener date = (v, year, monthOfYear, dayOfMonth) -> {
-            // TODO Auto-generated method stub
+
             myCalendar.set(Calendar.YEAR, year);
             myCalendar.set(Calendar.MONTH, monthOfYear);
             myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
             String myFormat = "dd/MM/yyyy"; //In which you need put here
             SimpleDateFormat sdf = new SimpleDateFormat(myFormat, new Locale("el"));
+            formFirstAppointmentDate.setText(sdf.format(myCalendar.getTime()));
+            try {
 
-                formFirstAppointmentDate.setText(sdf.format(myCalendar.getTime()));
+                myCalendar.setTime(sdf.parse(String.valueOf(formFirstAppointmentDate)));
+            } catch (ParseException e) {
 
-                try {
-                    myCalendar.setTime(sdf.parse(String.valueOf(formFirstAppointmentDate)));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-
-                myCalendar.add(Calendar.DATE, 28);
-
-                SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MM/yyyy");
-                formSecondAppointmentDate.setText(sdf1.format(myCalendar.getTime()));
-                myCalendar.add(Calendar.DATE, -28);
-
+                e.printStackTrace();
+            }
+            myCalendar.add(Calendar.DATE, 28);
+            SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MM/yyyy");
+            formSecondAppointmentDate.setText(sdf1.format(myCalendar.getTime()));
+            myCalendar.add(Calendar.DATE, -28);
         };
 
         formFirstAppointmentDate.setOnClickListener(v -> {
@@ -277,21 +276,24 @@ public class NewAppointmentFragment extends Fragment {
         });
 
         formDateHour.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
+
                 Dialog dHours = new Dialog(view.getContext());
                 dHours.setContentView(R.layout.dialog_date_hours);
                 dHours.show();
-
                 RadioGroup rgDateHours = dHours.findViewById(R.id.rgDateHours);
                 for(String dhours : datehours){
+
                     RadioButton rb = new RadioButton(view.getContext());
                     rb.setText(dhours);
-
                     rgDateHours.addView(rb);
                     rb.setOnClickListener(new View.OnClickListener() {
+
                         @Override
                         public void onClick(View v) {
+
                             formDateHour.setText(rb.getText());
                             dHours.hide();
                         }
@@ -307,8 +309,10 @@ public class NewAppointmentFragment extends Fragment {
         formDateHour.addTextChangedListener(submitEnalbed);
 
         formMakeAppointment.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
+
                 DatabaseReference appointmentRef = db.getReference().child("Appointments");
                 ArrayList<VaccinationCentre> centres = vacCeList;
                 int isApproved = 0;
@@ -319,33 +323,37 @@ public class NewAppointmentFragment extends Fragment {
                 int centre_id = 0;
 
                 for (VaccinationCentre centre : centres) {
+
                     if (centre.getName().equals(formVCentre.getText().toString())) {
+
                         centre_id = centre.getId();
                         break;
                     }
                 }
                 if (centre_id == 0) {
+
                     return;
                 }
 
                 int finalCentre_id = centre_id;
                 citizen.getAppointmentsSingle(appointmentRef, appointments -> {
+
                     for(Appointment app : appointments){
+
                         if(!app.getIsCanceledToBool()){
-                            //TODO Toast exeis kleisei rantebou
+
+
                             Toast.makeText(view.getContext(),getResources().getString(R.string.appAlreadyExist), Toast.LENGTH_SHORT).show();
                             return;
                         }
                     }
-                    Appointment newAppointment = new Appointment(date1, isApproved, isCanceled, finalCentre_id, citizen_id, parent_id);
 
+                    Appointment newAppointment = new Appointment(date1, isApproved, isCanceled, finalCentre_id, citizen_id, parent_id);
                     newAppointment.save(appointmentRef, firstAppSaved -> {
 
                         if(firstAppSaved == null){
 
-                            //TODO prompt not available date
                             Toast.makeText(view.getContext(),getResources().getString(R.string.notAvailableDate), Toast.LENGTH_SHORT).show();
-
                         }
                         else{
 
@@ -355,48 +363,21 @@ public class NewAppointmentFragment extends Fragment {
                                 if (secAppSaved == null) {
 
                                     firstAppSaved.delete(appointmentRef);
-                                    //TODO prompt not available date
                                     Toast.makeText(view.getContext(),getResources().getString(R.string.notAvailableDate), Toast.LENGTH_SHORT).show();
                                 }
                                 else {
 
-                                    //TODO prompt successful appointment
                                     Toast.makeText(view.getContext(),getResources().getString(R.string.submitSuccess) ,Toast.LENGTH_SHORT).show();
                                 }
                             });
                         }
-
                     });
                 });
-
-
-
             }
         });
 
         return view;
-
     }
-
-    private void formVacCelist (ArrayList<VaccinationCentre> vacCe, final LocationCallback callback){
-        ArrayList<Integer> distance = new ArrayList<Integer>();
-
-        LatLng myLocation = new LatLng(0,0);
-
-        @SuppressLint("MissingPermission")
-        Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
-        locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-
-                callback.getMyLocation(new LatLng(location.getLatitude(), location.getLongitude()));
-
-
-            }
-        });
-
-
-      }
 
     private Appointment makeAppointment(String p_id) {
 
@@ -407,20 +388,19 @@ public class NewAppointmentFragment extends Fragment {
         int centre_id = 0;
 
         for (VaccinationCentre centre : vacCeList) {
+
             if (centre.getName().equals(formVCentre.getText().toString())) {
+
                 centre_id = centre.getId();
                 break;
             }
         }
-        if (centre_id == 0) {
-
-        }
-
         return new Appointment(date2, isApproved, isCanceled, centre_id, citizen_id, p_id);
     }
 
     //Submit button enabled when the form is complete
     private TextWatcher submitEnalbed = new TextWatcher() {
+
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -428,6 +408,7 @@ public class NewAppointmentFragment extends Fragment {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+
             String firstApp = formFirstAppointmentDate.getText().toString().trim();
             String seccondApp = formSecondAppointmentDate.getText().toString().trim();
             String hour = formDateHour.getText().toString().trim();
@@ -443,9 +424,8 @@ public class NewAppointmentFragment extends Fragment {
     };
 
     private static double round (double value, int precision) {
+
         int scale = (int) Math.pow(10, precision);
         return (double) Math.round(value * scale) / scale;
     }
-
-
 }
