@@ -45,6 +45,7 @@ public class EmployeeMainActivity extends AppCompatActivity {
         Button btnAccepted = findViewById(R.id.btnAccepted);
         Button btnPending = findViewById(R.id.btnPending);
         Button btnAll = findViewById(R.id.btnAll);
+        Button btnDone = findViewById(R.id.btnDone);
         rvAppointments = findViewById(R.id.rvCentreAppointments);
 
         //disable buttons before loading appointments
@@ -57,6 +58,7 @@ public class EmployeeMainActivity extends AppCompatActivity {
         btnAccepted.setOnClickListener(v -> showConfirmed());
         btnPending.setOnClickListener(v -> showPending());
         btnAll.setOnClickListener(v -> showAll());
+        btnDone.setOnClickListener(v -> showDone());
 
         //load appointments
         employee.getCentre(centre -> {
@@ -90,6 +92,13 @@ public class EmployeeMainActivity extends AppCompatActivity {
 
     private void showAll() {
         setRecyclerViewData(orderAppointments(appointments));
+    }
+
+    private void showDone(){
+        Date today = Calendar.getInstance().getTime();
+        Stream<Appointment> filteredApps = appointments.stream().filter(app -> app.getIsApprovedToBool() && !app.getIsCanceledToBool() && app.getDateAsDate().before(today));
+        ArrayList<Appointment> filtered = filteredApps.collect(Collectors.toCollection(ArrayList::new));
+        setRecyclerViewData(orderAppointments(filtered));
     }
 
     private ArrayList<Appointment> orderAppointments(ArrayList<Appointment> apps) {

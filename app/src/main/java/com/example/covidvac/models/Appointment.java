@@ -189,6 +189,31 @@ public class Appointment implements Serializable {
         });
     }
 
+    public static void getCitizenAppointmentsSingle(DatabaseReference appRef, int cit_id, final AppointmentListCallback callback){
+
+        appRef.orderByChild("citizen_id").equalTo(cit_id).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                ArrayList<Appointment> list = new ArrayList();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    Appointment app = snapshot.getValue(Appointment.class);
+
+                    String key = snapshot.getKey();
+                    app.id = Integer.parseInt(key.substring(3)); //skips "id_"
+
+                    list.add(app);
+                }
+                callback.citizenAppointmentsCalled(list);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     public static void getCentreAppointments(DatabaseReference appRef, int cen_id, final AppointmentListCallback callback){
 
         appRef.orderByChild("centre_id").equalTo(cen_id).addValueEventListener(new ValueEventListener() {

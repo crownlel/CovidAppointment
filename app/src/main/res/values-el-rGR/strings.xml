@@ -43,4 +43,5 @@
     <string name="voice_false">Δεν αναγνωρίστηκε</string>
     <string name="voice_not_supported">Η αναγνώριση φωνής δεν υποστηρίζεται</string>
     <string name="citizen_login_wrong_age">Δεν γίνονται ραντεβού για άτομα κάτω των</string>
+    <string name="employee_main_btn_done">Ολοκληρωμένα</string>
 </resources>

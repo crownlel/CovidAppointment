@@ -148,6 +148,11 @@ public class Citizen implements Serializable {
         Appointment.getCitizenAppointments(appRef, id, callback);
     }
 
+    public void getAppointmentsSingle(DatabaseReference appRef, final AppointmentListCallback callback){
+
+        Appointment.getCitizenAppointmentsSingle(appRef, id, callback);
+    }
+
     public void canSubmit(final BooleanCallBack callBack){
         Appointment.getCitizenAppointments(FirebaseDatabase.getInstance().getReference("Appointments"), id, appointments -> {
 

@@ -329,7 +329,7 @@ public class NewAppointmentFragment extends Fragment {
                 }
 
                 int finalCentre_id = centre_id;
-                citizen.getAppointments(appointmentRef, appointments -> {
+                citizen.getAppointmentsSingle(appointmentRef, appointments -> {
                     for(Appointment app : appointments){
                         if(!app.getIsCanceledToBool()){
                             //TODO Toast exeis kleisei rantebou
@@ -337,38 +337,38 @@ public class NewAppointmentFragment extends Fragment {
                             return;
                         }
                     }
+                    Appointment newAppointment = new Appointment(date1, isApproved, isCanceled, finalCentre_id, citizen_id, parent_id);
 
+                    newAppointment.save(appointmentRef, firstAppSaved -> {
+
+                        if(firstAppSaved == null){
+
+                            //TODO prompt not available date
+                            Toast.makeText(view.getContext(),getResources().getString(R.string.notAvailableDate), Toast.LENGTH_SHORT).show();
+
+                        }
+                        else{
+
+                            Appointment secondApp = makeAppointment(Integer.toString(firstAppSaved.getId()));
+                            secondApp.save(appointmentRef, secAppSaved -> {
+
+                                if (secAppSaved == null) {
+
+                                    firstAppSaved.delete(appointmentRef);
+                                    //TODO prompt not available date
+                                    Toast.makeText(view.getContext(),getResources().getString(R.string.notAvailableDate), Toast.LENGTH_SHORT).show();
+                                }
+                                else {
+
+                                    //TODO prompt successful appointment
+                                    Toast.makeText(view.getContext(),getResources().getString(R.string.submitSuccess) ,Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+                    });
                 });
-                Appointment newAppointment = new Appointment(date1, isApproved, isCanceled, finalCentre_id, citizen_id, parent_id);
 
-                newAppointment.save(appointmentRef, firstAppSaved -> {
-
-                    if(firstAppSaved == null){
-
-                        //TODO prompt not available date
-                        Toast.makeText(view.getContext(),getResources().getString(R.string.notAvailableDate), Toast.LENGTH_SHORT).show();
-
-                    }
-                    else{
-
-                        Appointment secondApp = makeAppointment(Integer.toString(firstAppSaved.getId()));
-                        secondApp.save(appointmentRef, secAppSaved -> {
-
-                            if (secAppSaved == null) {
-
-                                firstAppSaved.delete(appointmentRef);
-                                //TODO prompt not available date
-                                Toast.makeText(view.getContext(),getResources().getString(R.string.notAvailableDate), Toast.LENGTH_SHORT).show();
-                            }
-                            else {
-
-                                //TODO prompt successful appointment
-                                Toast.makeText(view.getContext(),getResources().getString(R.string.submitSuccess) ,Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-
-                });
 
 
             }

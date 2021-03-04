@@ -46,4 +46,5 @@
     <string name="voice_false">I did not understand that</string>
     <string name="voice_not_supported">Speech recognition in not available</string>
     <string name="citizen_login_wrong_age">Appointments can not be made for people under the age of</string>
+    <string name="employee_main_btn_done">Done</string>
 </resources>
