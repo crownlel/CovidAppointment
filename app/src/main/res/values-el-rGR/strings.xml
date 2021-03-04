@@ -27,4 +27,8 @@
     <string name="dialog_edit_appointment_btnReject">Απόρριξη</string>
     <string name="dialog_edit_appointment_btnCancel">Ακύρωση</string>
     <string name="hoursHint">Επιλέξτε μια ώρα.</string>
+    <string name="employee_login_username">Όνομα χρήστη</string>
+    <string name="employee_login_password">Κωδικός</string>
+    <string name="employee_login_username_hint">Εισάγετε όνομα χρήστη</string>
+    <string name="employee_login_password_hint">Εισάγετε κωδικό</string>
 </resources>

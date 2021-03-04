@@ -4,6 +4,7 @@ import android.location.Location;
 
 import androidx.annotation.NonNull;
 
+import com.example.covidvac.interfaces.VaccinationCentreCallback;
 import com.example.covidvac.interfaces.VaccinationCentreListCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
@@ -66,6 +67,25 @@ public class VaccinationCentre {
         return longitude;
     }
 
+    public static void getCentre(VaccinationCentreCallback callback, int centreId){
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        db.getReference("VaccinationCentre").orderByKey().equalTo("id_" + centreId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot sn : snapshot.getChildren()){
+                    //assume there is only one child
+                    VaccinationCentre centre = sn.getValue(VaccinationCentre.class);
+                    callback.centreFetched(centre);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
     public static void getVacCe(DatabaseReference vcRef, final VaccinationCentreListCallback callback){
 
         ArrayList<VaccinationCentre> vacCen = new ArrayList<VaccinationCentre>();
@@ -103,18 +123,14 @@ public class VaccinationCentre {
     public float getDistance(LatLng latlng){
 
         Location loc1 = new Location("");
-        Location loc2 = new Location("");
-
         loc1.setLatitude(latlng.latitude);
         loc1.setLongitude(latlng.longitude);
 
+        Location loc2 = new Location("");
         loc2.setLatitude(this.latitude);
         loc2.setLongitude(this.longitude);
 
-
-
         return loc1.distanceTo(loc2);
-
     }
 
     public static ArrayList<Map.Entry<VaccinationCentre,Float>> getSortedDistances(ArrayList<VaccinationCentre> centres, LatLng latlng){

@@ -3,7 +3,7 @@ package com.example.covidvac.models;
 import androidx.annotation.NonNull;
 
 import com.example.covidvac.interfaces.AppointmentListCallback;
-import com.example.covidvac.interfaces.CitizenLoginCallback;
+import com.example.covidvac.interfaces.LoginCallback;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.database.DataSnapshot;
@@ -77,7 +77,7 @@ public class Citizen implements Serializable {
 //endregion
 
 
-    public void login(DatabaseReference citRef, String tax_id, String birthday, final CitizenLoginCallback callback) {
+    public void login(DatabaseReference citRef, String tax_id, String birthday, final LoginCallback callback) {
 
         try {
 

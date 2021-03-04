@@ -55,21 +55,11 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
 
         final Appointment appointment = appointments.get(position);
 
-        holder.tvTime.setText(new SimpleDateFormat("hh:mm").format(appointment.getDateAsDate()));
+        holder.tvTime.setText(new SimpleDateFormat("HH:mm").format(appointment.getDateAsDate()));
         holder.tvDate.setText(new SimpleDateFormat("dd/MM/yyyy").format(appointment.getDateAsDate()));
 
-
-
-        //citizen does not need to see his name
-        if (context instanceof CitizenMainActivity) {
-            holder.tvCitName.setVisibility(View.INVISIBLE);
-        }
-        else{
-            appointment.getCitizen(cit -> holder.tvCitName.setText(cit.getName()));
-        }
-
+        appointment.getCitizen(cit -> holder.tvCitName.setText(cit.getName()));
         appointment.getCentre(centre -> holder.tvCentre.setText(centre.getName()));
-
 
         holder.layoutAppointmentItem.setOnClickListener(v -> {
             //if pending and on citizen main activity

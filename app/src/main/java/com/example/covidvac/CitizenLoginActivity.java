@@ -13,7 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.example.covidvac.interfaces.CitizenLoginCallback;
+import com.example.covidvac.interfaces.LoginCallback;
 import com.example.covidvac.models.Citizen;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -70,7 +70,7 @@ public class CitizenLoginActivity extends AppCompatActivity {
             DatabaseReference cref = db.getReference("Citizens");
 
             Citizen citizen = new Citizen();
-            citizen.login(cref, tax_id.trim(), birthdate.trim(), new CitizenLoginCallback() {
+            citizen.login(cref, tax_id.trim(), birthdate.trim(), new LoginCallback() {
                 @Override
                 public void loginCalled(boolean success) {
 
@@ -94,50 +94,6 @@ public class CitizenLoginActivity extends AppCompatActivity {
         });
 
     }
-//
-//    private Citizen login(String tax_id, String birthdate) {
-//
-//        Intent intent = new Intent(this, CitizenMainActivity.class);
-//        Bundle bundle = new Bundle();
-//
-//        try {
-//
-//            DatabaseReference cref = db.getReference("Citizens");
-//
-//            cref.orderByKey().addValueEventListener(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-//
-//                        Citizen ciz = snapshot.getValue(Citizen.class);
-//                        if (ciz != null && tax_id.equals(ciz.getTax_id()) && birthdate.equals(ciz.getBirthdayToString())) {
-//
-//                            bundle.putSerializable("citizen", ciz);
-//                            intent.putExtras(bundle);
-//                            startActivity(intent);
-//                            return;
-//                        }
-//                    }
-//                    Toast.makeText(getApplicationContext(),
-//                            getString(R.string.citizen_login_wrong_credentials), Toast.LENGTH_SHORT)
-//                            .show();
-//                }
-//
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError error) {
-//
-//                }
-//            });
-//        } catch (Exception ex) {
-//            Toast.makeText(getApplicationContext(),
-//                    "Oops", Toast.LENGTH_SHORT)
-//                    .show();
-//
-//        }
-//
-//
-//        return null;
-//    }
 
     @Override
     protected void onStop() {
