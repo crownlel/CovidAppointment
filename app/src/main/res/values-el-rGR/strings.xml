@@ -12,7 +12,7 @@
     <string name="citizen_main_tab_text_2">Καταχωρημένα</string>
     <string name="citizen_login_wrong_credentials">Λάθος στοιχεία. \nΠαρακαλώ, ξαναπροσπαθήστε.</string>
     <string name="formName">Όνομα: </string>
-    <string name="formInsurance">Α.Μ.Κ.Α: </string>
+    <string name="formInsurance">"Α.Μ.Κ.Α:  "</string>
     <string name="formBDate">Ημ. Γέννησης: </string>
     <string name="formID">Αριθμός Ταυτότητας:</string>
     <string name="formAppointmentDate">Ημερομηνία Πρώτου Ραντεβού: </string>
@@ -35,4 +35,8 @@
     <string name="employee_main_btn_accepted">Επιβεβαιωμένα</string>
     <string name="employee_main_btn_pending">Προς Έγκριση</string>
     <string name="employee_main_btn_all">Εμφάνιση όλων</string>
+    <string name="voice_prompt">είσοδος, διαχείρηση, χάρτες, αγγλικά, ελληνικά</string>
+    <string name="voice_false">Δεν αναγνωρίστηκε</string>
+    <string name="voice_not_supported">Η αναγνώριση φωνής δεν υποστηρίζεται</string>
+    <string name="citizen_login_wrong_age">Δεν γίνονται ραντεβού για άτομα κάτω των</string>
 </resources>

@@ -38,4 +38,8 @@
     <string name="employee_main_btn_accepted">Confirmed</string>
     <string name="employee_main_btn_pending">Pending</string>
     <string name="employee_main_btn_all">Show all</string>
+    <string name="voice_prompt">Ask for: enter, manage, maps, english, greek</string>
+    <string name="voice_false">I did not understand that</string>
+    <string name="voice_not_supported">Speech recognition in not available</string>
+    <string name="citizen_login_wrong_age">Appointments can not be made for people under the age of</string>
 </resources>

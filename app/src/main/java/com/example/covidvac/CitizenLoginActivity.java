@@ -18,14 +18,17 @@ import com.example.covidvac.models.Citizen;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 public class CitizenLoginActivity extends AppCompatActivity {
 
     FirebaseDatabase db;
     SharedPreferences sharedPref;
-    final String TAX_ID_KEY = "tax_id";
+    final String SOCIAL_SEC_NUM_KEY = "social_security_number";
     final String BIRTHDAY = "birthday";
+    final long MIN_AGE = 70;
 
 
     @Override
@@ -35,9 +38,9 @@ public class CitizenLoginActivity extends AppCompatActivity {
         db = FirebaseDatabase.getInstance();
         sharedPref = getApplicationContext().getSharedPreferences("LOGIN_PREFS", Context.MODE_PRIVATE);
 
-        EditText etTaxId = findViewById(R.id.etTaxId);
+        EditText etSocialSecNum = findViewById(R.id.etSocialSecNum);
         EditText etBirthDate = findViewById(R.id.etBirthdate);
-        etTaxId.setText(sharedPref.getString(TAX_ID_KEY, ""));
+        etSocialSecNum.setText(sharedPref.getString(SOCIAL_SEC_NUM_KEY, ""));
         etBirthDate.setText(sharedPref.getString(BIRTHDAY, ""));
 
 
@@ -65,23 +68,39 @@ public class CitizenLoginActivity extends AppCompatActivity {
         Button btnLogin = findViewById(R.id.btnLogin);
         btnLogin.setOnClickListener(v -> {
             //TODO change this
-            String tax_id = etTaxId.getText().toString().trim();
+            String socialSecNum = etSocialSecNum.getText().toString().trim();
             String birthdate = etBirthDate.getText().toString().trim();
             DatabaseReference cref = db.getReference("Citizens");
 
             Citizen citizen = new Citizen();
-            citizen.login(cref, tax_id.trim(), birthdate.trim(), new LoginCallback() {
+            citizen.login(cref, socialSecNum.trim(), birthdate.trim(), new LoginCallback() {
                 @Override
                 public void loginCalled(boolean success) {
 
                     if (success) {
-                        Intent intent = new Intent(getApplicationContext(), CitizenMainActivity.class);
-                        Bundle bundle = new Bundle();
 
-                        bundle.putSerializable("citizen", citizen);
-                        intent.putExtras(bundle);
-                        startActivity(intent);
-                    } else {
+                        Date birthdate = citizen.getBirthday();
+                        Date today = Calendar.getInstance().getTime();
+
+                        long diffInMillies = Math.abs(today.getTime() - birthdate.getTime());
+                        long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+                        long age = diff/365;
+                        if (age >= MIN_AGE){
+                            Intent intent = new Intent(getApplicationContext(), CitizenMainActivity.class);
+                            Bundle bundle = new Bundle();
+
+                            bundle.putSerializable("citizen", citizen);
+                            intent.putExtras(bundle);
+                            startActivity(intent);
+                        }
+                        else {
+
+                            Toast.makeText(getApplicationContext(),
+                                    getString(R.string.citizen_login_wrong_age) + " " + MIN_AGE, Toast.LENGTH_SHORT)
+                                    .show();
+                        }
+                    }
+                    else {
 
                         Toast.makeText(getApplicationContext(),
                                 getString(R.string.citizen_login_wrong_credentials), Toast.LENGTH_SHORT)
@@ -89,8 +108,6 @@ public class CitizenLoginActivity extends AppCompatActivity {
                     }
                 }
             });
-
-
         });
 
     }
@@ -101,9 +118,9 @@ public class CitizenLoginActivity extends AppCompatActivity {
         if (sharedPref != null) {
             SharedPreferences.Editor editor = sharedPref.edit();
 
-            EditText etTaxId = findViewById(R.id.etTaxId);
+            EditText etSocialSecNum = findViewById(R.id.etSocialSecNum);
             EditText etBirthDate = findViewById(R.id.etBirthdate);
-            editor.putString(TAX_ID_KEY, etTaxId.getText().toString());
+            editor.putString(SOCIAL_SEC_NUM_KEY, etSocialSecNum.getText().toString());
             editor.putString(BIRTHDAY, etBirthDate.getText().toString());
             editor.apply();
         }

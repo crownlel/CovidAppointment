@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.covidvac.CitizenMainActivity;
+import com.example.covidvac.EmployeeMainActivity;
 import com.example.covidvac.MapsActivity;
 import com.example.covidvac.R;
 import com.example.covidvac.interfaces.CitizenCallback;
@@ -41,7 +42,6 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
     }
 
 
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -63,19 +63,18 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
 
         holder.layoutAppointmentItem.setOnClickListener(v -> {
             //if pending and on citizen main activity
-            if (context instanceof CitizenMainActivity && !appointment.getIsCanceledToBool() && !appointment.getIsApprovedToBool()) {
-                ((CitizenMainActivity)context).showEditDialog(appointment);
-            }
-            //TODO implement this
+            if (context instanceof CitizenMainActivity && !appointment.getIsCanceledToBool() && !appointment.getIsApprovedToBool())
+            {
+                ((CitizenMainActivity) context).showEditDialog(appointment);
+            } else if (context instanceof EmployeeMainActivity) {
 
-//                else if (context instanceof CentreMainActivity){
-//
-//                }
+                ((EmployeeMainActivity) context).showEditDialog(appointment);
+            }
         });
         //sets dynamic icon per appointment status
         if (appointment.getIsApprovedToBool())
             holder.ivStatus.setImageDrawable(context.getDrawable(R.drawable.ic_confirmed_foreground));
-        if(appointment.getIsCanceledToBool())
+        if (appointment.getIsCanceledToBool())
             holder.ivStatus.setImageDrawable(context.getDrawable(R.drawable.ic_canceled_foreground));
 
         if (position % 2 == 0) {
@@ -95,7 +94,7 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
         return appointments.size();
     }
 
-    class ViewHolder extends  RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

@@ -82,7 +82,7 @@ public class Citizen implements Serializable {
         try {
 
             TaskCompletionSource<Citizen> tcs = new TaskCompletionSource<>();
-            citRef.orderByKey().addValueEventListener(new ValueEventListener() {
+            citRef.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     try {

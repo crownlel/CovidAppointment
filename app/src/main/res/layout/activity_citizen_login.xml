@@ -16,7 +16,7 @@
         android:text="@string/citizen_login_tv_tax_id" />
 
     <EditText
-        android:id="@+id/etTaxId"
+        android:id="@+id/etSocialSecNum"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"

@@ -90,6 +90,9 @@ public class CitizenMainActivity extends AppCompatActivity {
         Button btnCancel = filterDialog.findViewById(R.id.btnReject);
         Button btnApprove = filterDialog.findViewById(R.id.btnApprove);
 
+        filterDialog.findViewById(R.id.tvSocSecNumber).setVisibility(View.GONE);
+        filterDialog.findViewById(R.id.tvContact).setVisibility(View.GONE);
+
         //change button text for citizen view
         btnApprove.setVisibility(View.GONE);
         btnCancel.setText(R.string.dialog_edit_appointment_btnCancel);
