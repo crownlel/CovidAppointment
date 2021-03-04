@@ -322,22 +322,31 @@ public class NewAppointmentFragment extends Fragment {
 
                 Appointment newAppointment = new Appointment(date1, isApproved, isCanceled, centre_id, citizen_id, parent_id);
 
-                newAppointment.save(appointmentRef, appointment -> {
-                    Appointment secondApp = makeAppointment(appointmentRef, Integer.toString(appointment.getId()));
-                    secondApp.save(appointmentRef,appointment1 -> {return;});
+                newAppointment.save(appointmentRef, firstAppSaved -> {
+
+                    if(firstAppSaved == null){
+
+                        //TODO prompt not available date
+                    }
+                    else{
+
+                        Appointment secondApp = makeAppointment(appointmentRef, Integer.toString(firstAppSaved.getId()));
+                        secondApp.save(appointmentRef, secAppSaved -> {
+
+                            if (secAppSaved == null) {
+
+                                firstAppSaved.delete(appointmentRef);
+                                //TODO prompt not available date
+                            }
+                            else {
+
+                                //TODO prompt successful appointment
+                            }
+                        });
+                    }
+
                 });
 
-
-
-                /*
-                DatabaseReference newAppointmentRef =  appointmentRef.push();
-
-
-                newAppointmentRef.setValue(newAppointment);
-
-                parent_id = newAppointmentRef.getKey();
-
-                makeAppointment(appointmentRef, parent_id); */
                 Toast.makeText(view.getContext(), "Appointment Submited",Toast.LENGTH_SHORT).show();
             }
         });

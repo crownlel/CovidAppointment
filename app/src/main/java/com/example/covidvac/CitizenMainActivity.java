@@ -95,9 +95,7 @@ public class CitizenMainActivity extends AppCompatActivity {
         btnCancel.setText(R.string.dialog_edit_appointment_btnCancel);
         btnCancel.setOnClickListener(v -> {
             appointment.setIsCanceled(1);
-            appointment.save(FirebaseDatabase.getInstance().getReference("Appointments"), appointment1 -> {
-                return;
-            });
+            appointment.save(FirebaseDatabase.getInstance().getReference("Appointments"), app -> { });
             filterDialog.hide();
         });
 

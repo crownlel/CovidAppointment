@@ -1,5 +1,7 @@
 package com.example.covidvac.models;
 
+import android.app.Application;
+
 import androidx.annotation.NonNull;
 
 import com.example.covidvac.interfaces.AppointmentCallback;
@@ -7,6 +9,7 @@ import com.example.covidvac.interfaces.AppointmentListCallback;
 import com.example.covidvac.interfaces.CitizenCallback;
 
 import com.example.covidvac.interfaces.VaccinationCentreCallback;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -237,19 +240,47 @@ public class Appointment implements Serializable {
             final public String parent_id = getParent_id();
         };
     }
-    public void save(DatabaseReference appRef, AppointmentCallback callback){
-        //save new
-        Map<String, Object> appointmentUpdates = new HashMap<>();
 
+    public void save(DatabaseReference appRef, AppointmentCallback callback){
+
+        Map<String, Object> appointmentUpdates = new HashMap<>();
+        //save new
         if (this.id == 0){
+
             FirebaseDatabase.getInstance().getReference("Ids/Appointments").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
+
                     id = (int)((long) snapshot.getValue());
                     FirebaseDatabase.getInstance().getReference("Ids/Appointments").setValue(id+1);
                     appointmentUpdates.put("id_" + id, toObject());
-                    appRef.child("id_" + id).setValue(toObject());
-                    callback.appointmentFetched(Appointment.this);
+
+                    //check hour availability
+                    appRef.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+
+                                Appointment app = snapshot.getValue(Appointment.class);
+                                if (app.getDate().equals(date)){
+
+                                    //date is not available --> return null
+                                    callback.appointmentFetched(null);
+                                    return;
+                                }
+                            }
+
+                            //date is available
+                            appRef.child("id_" + id).setValue(toObject());
+                            callback.appointmentFetched(Appointment.this);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
                 }
 
                 @Override
@@ -262,7 +293,68 @@ public class Appointment implements Serializable {
         else {
             appointmentUpdates.put("id_" + id, toObject());
             appRef.updateChildren(appointmentUpdates);
+
+            //update related appointment's status
+            //current appointment is first --> update second
+            if (parent_id.equals("")){
+                appRef.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            Appointment app = snapshot.getValue(Appointment.class);
+                            if(app.getParent_id().trim().equals(Integer.toString(id).trim())){
+
+                                app.setIsApproved(isApproved);
+                                app.setIsCanceled(isCanceled);
+                                Map<String, Object> appUpdates = new HashMap<>();
+                                appUpdates.put("id_" + snapshot.getKey().substring(3), app.toObject());
+                                appRef.updateChildren(appUpdates);
+
+                                return;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+            //current appointment is second --> update first
+            else{
+                appRef.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            String key = snapshot.getKey();
+                            if (key.substring(3).equals(parent_id)){
+                                Appointment app = snapshot.getValue(Appointment.class);
+
+                                app.setIsApproved(isApproved);
+                                app.setIsCanceled(isCanceled);
+                                Map<String, Object> appUpdates = new HashMap<>();
+                                appUpdates.put("id_" + key.substring(3), app.toObject());
+                                appRef.updateChildren(appUpdates);
+
+                                return;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+
             callback.appointmentFetched(Appointment.this);
         }
+    }
+
+    public void delete(DatabaseReference appRef){
+
+        appRef.child("id_" + id).removeValue();
     }
 }
