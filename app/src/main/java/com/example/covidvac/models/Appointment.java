@@ -53,7 +53,7 @@ public class Appointment implements Serializable {
     }
 
     public Date getDateAsDate() {
-        DateFormat DF = new SimpleDateFormat("dd/MM/yyyy hh:mm");
+        DateFormat DF = new SimpleDateFormat("dd/MM/yyyy HH:mm");
         try {
             return DF.parse(date);
         } catch (ParseException ex) {

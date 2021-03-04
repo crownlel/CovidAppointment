@@ -102,7 +102,7 @@ public class CitizenMainActivity extends AppCompatActivity {
             filterDialog.hide();
         });
 
-        tvTime.setText(new SimpleDateFormat("hh:mm").format(appointment.getDateAsDate()));
+        tvTime.setText(new SimpleDateFormat("HH:mm").format(appointment.getDateAsDate()));
         tvDate.setText(new SimpleDateFormat("dd/MM/yyyy").format(appointment.getDateAsDate()));
 
         appointment.getCentre(centre -> tvCentre.setText(centre.getName()));
