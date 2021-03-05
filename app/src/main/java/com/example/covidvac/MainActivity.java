@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //set buttons functionality
         Button button = findViewById(R.id.btnEnter);
         button.setOnClickListener(v -> enter());
 
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         ivVoice.setOnClickListener(v -> voiceRecognition());
     }
 
+    //changes app language to greek
     private void setGreek(){
         LocaleManager.setLocale(this, "el");
         this.finish();
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         overridePendingTransition(0, 0);
     }
 
+    //changes app language to english
     private void setEnglish(){
         LocaleManager.setLocale(this, "en");
         this.finish();
@@ -60,25 +63,28 @@ public class MainActivity extends AppCompatActivity {
         overridePendingTransition(0, 0);
     }
 
+    //enters employee login activity
     private void manage(){
         Intent intent = new Intent(this, EmployeeLoginActivity.class);
         startActivity(intent);
     }
 
+    //enters citizen login activity
     private void enter(){
 
         Intent intent = new Intent(this, CitizenLoginActivity.class);
         startActivity(intent);
     }
 
+    //vaccination center map
     public void mapView(View view) {
 
         Intent maps = new Intent(this, MapsActivity.class);
 
         startActivity(maps);
-
     }
 
+    //prompts user for voice input
     private void voiceRecognition(){
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
             Toast.makeText(this,getString(R.string.voice_not_supported), Toast.LENGTH_SHORT).show();
@@ -94,7 +100,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == this.speechRequest && resultCode == -1){
+
+        //if request code is speechRequest code result is voice generated string data
+        if (requestCode == speechRequest && resultCode == -1){
 
             ArrayList result;
             if (data != null){

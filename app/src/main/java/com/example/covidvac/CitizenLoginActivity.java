@@ -40,77 +40,82 @@ public class CitizenLoginActivity extends AppCompatActivity {
 
         EditText etSocialSecNum = findViewById(R.id.etSocialSecNum);
         EditText etBirthDate = findViewById(R.id.etBirthdate);
+
+        //gets last given credentials for easier use
         etSocialSecNum.setText(sharedPref.getString(SOCIAL_SEC_NUM_KEY, ""));
         etBirthDate.setText(sharedPref.getString(BIRTHDAY, ""));
 
-
-        //calendar stuff
         final Calendar myCalendar = Calendar.getInstance();
+        //fill BirthDate EditText when a date is picked on dialog
         DatePickerDialog.OnDateSetListener date = (view, year, monthOfYear, dayOfMonth) -> {
             // TODO Auto-generated method stub
             myCalendar.set(Calendar.YEAR, year);
             myCalendar.set(Calendar.MONTH, monthOfYear);
             myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
-            String myFormat = "dd/MM/yyyy"; //In which you need put here
+            String myFormat = "dd/MM/yyyy";
             SimpleDateFormat sdf = new SimpleDateFormat(myFormat, new Locale("el"));
 
             etBirthDate.setText(sdf.format(myCalendar.getTime()));
         };
 
+        //opens DatePickerDialog
         etBirthDate.setOnClickListener(v -> {
+
           DatePickerDialog datePicker =  new DatePickerDialog(this, date, myCalendar
                     .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH));
+
+            //sets max datepicker date
             Calendar c = Calendar.getInstance();
             c.add(Calendar.HOUR,-24);
-            Long yesterday = c.getTimeInMillis();
+            long yesterday = c.getTimeInMillis();
             datePicker.getDatePicker().setMaxDate(yesterday);
             datePicker.show();
         });
 
-        //login
+
         Button btnLogin = findViewById(R.id.btnLogin);
+        //login function when login button is clicked
         btnLogin.setOnClickListener(v -> {
-            //TODO change this
+
             String socialSecNum = etSocialSecNum.getText().toString().trim();
             String birthdate = etBirthDate.getText().toString().trim();
             DatabaseReference cref = db.getReference("Citizens");
 
             Citizen citizen = new Citizen();
-            citizen.login(cref, socialSecNum.trim(), birthdate.trim(), new LoginCallback() {
-                @Override
-                public void loginCalled(boolean success) {
+            citizen.login(cref, socialSecNum.trim(), birthdate.trim(), success -> {
 
-                    if (success) {
+                if (success) {
 
-                        Date birthdate = citizen.getBirthday();
-                        Date today = Calendar.getInstance().getTime();
+                    Date birthdate1 = citizen.getBirthday();
+                    Date today = Calendar.getInstance().getTime();
 
-                        long diffInMillies = Math.abs(today.getTime() - birthdate.getTime());
-                        long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-                        long age = diff/365;
-                        if (age >= MIN_AGE){
-                            Intent intent = new Intent(getApplicationContext(), CitizenMainActivity.class);
-                            Bundle bundle = new Bundle();
+                    //computes citizens current age in order to allow him to proceed
+                    long diffInMillies = Math.abs(today.getTime() - birthdate1.getTime());
+                    long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+                    long age = diff/365;
+                    //age check
+                    if (age >= MIN_AGE){
+                        Intent intent = new Intent(getApplicationContext(), CitizenMainActivity.class);
+                        Bundle bundle = new Bundle();
 
-                            bundle.putSerializable("citizen", citizen);
-                            intent.putExtras(bundle);
-                            startActivity(intent);
-                        }
-                        else {
-
-                            Toast.makeText(getApplicationContext(),
-                                    getString(R.string.citizen_login_wrong_age) + " " + MIN_AGE, Toast.LENGTH_SHORT)
-                                    .show();
-                        }
+                        bundle.putSerializable("citizen", citizen);
+                        intent.putExtras(bundle);
+                        startActivity(intent);
                     }
                     else {
 
                         Toast.makeText(getApplicationContext(),
-                                getString(R.string.citizen_login_wrong_credentials), Toast.LENGTH_SHORT)
+                                getString(R.string.citizen_login_wrong_age) + " " + MIN_AGE, Toast.LENGTH_SHORT)
                                 .show();
                     }
+                }
+                else {
+
+                    Toast.makeText(getApplicationContext(),
+                            getString(R.string.citizen_login_wrong_credentials), Toast.LENGTH_SHORT)
+                            .show();
                 }
             });
         });
@@ -123,6 +128,7 @@ public class CitizenLoginActivity extends AppCompatActivity {
         if (sharedPref != null) {
             SharedPreferences.Editor editor = sharedPref.edit();
 
+            //saves last used credentials for easier use
             EditText etSocialSecNum = findViewById(R.id.etSocialSecNum);
             EditText etBirthDate = findViewById(R.id.etBirthdate);
             editor.putString(SOCIAL_SEC_NUM_KEY, etSocialSecNum.getText().toString());

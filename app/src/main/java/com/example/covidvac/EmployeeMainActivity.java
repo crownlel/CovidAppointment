@@ -52,6 +52,7 @@ public class EmployeeMainActivity extends AppCompatActivity {
         btnAccepted.setEnabled(false);
         btnPending.setEnabled(false);
         btnAll.setEnabled(false);
+        btnDone.setEnabled(false);
         tvUser.setText(employee.getFullname());
 
         //set buttons functionality
@@ -72,6 +73,7 @@ public class EmployeeMainActivity extends AppCompatActivity {
                 btnAccepted.setEnabled(true);
                 btnPending.setEnabled(true);
                 btnAll.setEnabled(true);
+                btnDone.setEnabled(true);
             });
         });
 
@@ -94,6 +96,7 @@ public class EmployeeMainActivity extends AppCompatActivity {
         setRecyclerViewData(orderAppointments(appointments));
     }
 
+    //shows confirmed appointments that are done.
     private void showDone(){
         Date today = Calendar.getInstance().getTime();
         Stream<Appointment> filteredApps = appointments.stream().filter(app -> app.getIsApprovedToBool() && !app.getIsCanceledToBool() && app.getDateAsDate().before(today));
@@ -101,6 +104,7 @@ public class EmployeeMainActivity extends AppCompatActivity {
         setRecyclerViewData(orderAppointments(filtered));
     }
 
+    //orders appointments in pairs per user/creation
     private ArrayList<Appointment> orderAppointments(ArrayList<Appointment> apps) {
 
         Stream<Appointment> firstApps = apps.stream().filter(app -> app.getParent_id().trim().equals(""));
@@ -108,7 +112,6 @@ public class EmployeeMainActivity extends AppCompatActivity {
         ArrayList<Appointment> firstList = firstApps.collect(Collectors.toCollection(ArrayList::new));
 
         Stream<Appointment> secondApps = apps.stream().filter(app -> !app.getParent_id().trim().equals(""));
-        //secondApps = secondApps.sorted(Comparator.comparing(Appointment::getDateAsDate));
         ArrayList<Appointment> secondList = secondApps.collect(Collectors.toCollection(ArrayList::new));
 
         ArrayList<Appointment> orderedApps = new ArrayList<>();
@@ -126,6 +129,7 @@ public class EmployeeMainActivity extends AppCompatActivity {
         return orderedApps;
     }
 
+    //fills recyclerview with data
     private void setRecyclerViewData(ArrayList<Appointment> apps){
         if(rvAppointments != null){
 
@@ -139,7 +143,6 @@ public class EmployeeMainActivity extends AppCompatActivity {
 
     public void showEditDialog(Appointment appointment){
 
-        //do not edit canceled appointments
         Date today = Calendar.getInstance().getTime();
         //if appointment is canceled or has happened it should not be edited;
         if(appointment.getIsCanceledToBool() || appointment.getDateAsDate().before(today))
@@ -148,11 +151,11 @@ public class EmployeeMainActivity extends AppCompatActivity {
         final Dialog filterDialog = new Dialog(this);
         filterDialog.setContentView(R.layout.dialog_edit_appointment);
 
+        //use item layout inside the dialog
         LinearLayout itemLayout = filterDialog.findViewById(R.id.itemLayout);
         LayoutInflater factory = LayoutInflater.from(this);
         View itemView = factory.inflate(R.layout.item_appointment, null);
 
-        //fill view with data
         TextView tvDate = itemView.findViewById(R.id.tvDate);
         TextView tvTime = itemView.findViewById(R.id.tvTime);
         TextView tvCentre = itemView.findViewById(R.id.tvCentre);
@@ -163,9 +166,7 @@ public class EmployeeMainActivity extends AppCompatActivity {
         TextView tvSocSecNumber = filterDialog.findViewById(R.id.tvSocSecNumber);
         TextView tvContact = filterDialog.findViewById(R.id.tvContact);
 
-
-
-        //btnCancel.setText(R.string.dialog_edit_appointment_btnCancel);
+        //buttons functionality
         btnCancel.setOnClickListener(v -> {
             appointment.setIsCanceled(1);
             appointment.save(FirebaseDatabase.getInstance().getReference("Appointments"), app -> { });
@@ -177,6 +178,7 @@ public class EmployeeMainActivity extends AppCompatActivity {
             filterDialog.hide();
         });
 
+        //fill views with data
         tvTime.setText(new SimpleDateFormat("hh:mm").format(appointment.getDateAsDate()));
         tvDate.setText(new SimpleDateFormat("dd/MM/yyyy").format(appointment.getDateAsDate()));
 

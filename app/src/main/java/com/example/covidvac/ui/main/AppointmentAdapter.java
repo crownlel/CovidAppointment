@@ -55,6 +55,7 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
 
         final Appointment appointment = appointments.get(position);
 
+        //fill holder views with data
         holder.tvTime.setText(new SimpleDateFormat("HH:mm").format(appointment.getDateAsDate()));
         holder.tvDate.setText(new SimpleDateFormat("dd/MM/yyyy").format(appointment.getDateAsDate()));
 
@@ -66,17 +67,21 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
             if (context instanceof CitizenMainActivity && !appointment.getIsCanceledToBool() && !appointment.getIsApprovedToBool())
             {
                 ((CitizenMainActivity) context).showEditDialog(appointment);
-            } else if (context instanceof EmployeeMainActivity) {
+            }
+            //if called on employee main activity
+            else if (context instanceof EmployeeMainActivity) {
 
                 ((EmployeeMainActivity) context).showEditDialog(appointment);
             }
         });
+
         //sets dynamic icon per appointment status
         if (appointment.getIsApprovedToBool())
             holder.ivStatus.setImageDrawable(context.getDrawable(R.drawable.ic_confirmed_foreground));
         if (appointment.getIsCanceledToBool())
             holder.ivStatus.setImageDrawable(context.getDrawable(R.drawable.ic_canceled_foreground));
 
+        //alternate items background color for better visualization
         if (position % 2 == 0) {
             holder.layoutAppointmentItem.setBackgroundColor(
                     ContextCompat.getColor(

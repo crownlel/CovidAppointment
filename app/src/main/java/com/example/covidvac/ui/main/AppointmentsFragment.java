@@ -55,9 +55,11 @@ public class AppointmentsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_appointments, container, false);
 
+
         rvAppointments = view.findViewById(R.id.rvAppointments);
         rvAppointments.setVisibility(View.VISIBLE);
         rvAppointments.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        //fills recyclerview with data
         citizen.getAppointments(
                 FirebaseDatabase.getInstance().getReference("Appointments"),
                 appointments -> {

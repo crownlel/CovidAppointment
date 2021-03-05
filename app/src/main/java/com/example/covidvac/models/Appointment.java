@@ -138,7 +138,7 @@ public class Appointment implements Serializable {
     public void setParent_id(String parent_id) {
         this.parent_id = parent_id;
     }
-    //endregion & &
+    //endregion
 
     public void getCentre(VaccinationCentreCallback callback){
 
@@ -189,6 +189,7 @@ public class Appointment implements Serializable {
         });
     }
 
+    //gets appointments without datatracking
     public static void getCitizenAppointmentsSingle(DatabaseReference appRef, int cit_id, final AppointmentListCallback callback){
 
         appRef.orderByChild("citizen_id").equalTo(cit_id).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -239,6 +240,7 @@ public class Appointment implements Serializable {
         });
     }
 
+    //database object format
     private Object toObject(){
         return new Object(){
             final public int centre_id = getCentre_id();
@@ -250,16 +252,19 @@ public class Appointment implements Serializable {
         };
     }
 
+    //save or updates current appointment
     public void save(DatabaseReference appRef, AppointmentCallback callback){
 
         Map<String, Object> appointmentUpdates = new HashMap<>();
-        //save new
+
+        //If id is 0 the appointment is new and has to get a new id
         if (this.id == 0){
 
             FirebaseDatabase.getInstance().getReference("Ids/Appointments").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
 
+                    //gets next available id
                     id = (int)((long) snapshot.getValue());
                     FirebaseDatabase.getInstance().getReference("Ids/Appointments").setValue(id+1);
                     appointmentUpdates.put("id_" + id, toObject());
@@ -280,7 +285,7 @@ public class Appointment implements Serializable {
                                 }
                             }
 
-                            //date is available
+                            //date is available --> save new appointement
                             appRef.child("id_" + id).setValue(toObject());
                             callback.appointmentFetched(Appointment.this);
                         }
@@ -298,12 +303,13 @@ public class Appointment implements Serializable {
                 }
             });
         }
-        //update existing
+        //update existing appointment
         else {
             appointmentUpdates.put("id_" + id, toObject());
             appRef.updateChildren(appointmentUpdates);
 
-            //update related appointment's status
+            //update related appointment's status. Both first and second appointment should have
+            //their statused in sync.
             //current appointment is first --> update second
             if (parent_id.equals("")){
                 appRef.orderByKey().addListenerForSingleValueEvent(new ValueEventListener() {

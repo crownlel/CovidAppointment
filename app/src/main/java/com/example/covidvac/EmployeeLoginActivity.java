@@ -31,12 +31,15 @@ public class EmployeeLoginActivity extends AppCompatActivity {
         EditText etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLoginEmp);
 
+        //gets last given username for easier use
         etUsername.setText(sharedPref.getString(USERNAME_KEY, ""));
 
         btnLogin.setEnabled(false);
         btnLogin.setOnClickListener(v -> login(etUsername.getText().toString().trim(),
                                             etPassword.getText().toString().trim()));
 
+        //TextWatcher implementation. checks if credential fields are not empty in order to avoid
+        //pointless login attempts
         TextWatcher watcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -69,6 +72,7 @@ public class EmployeeLoginActivity extends AppCompatActivity {
         etPassword.addTextChangedListener(watcher);
     }
 
+    //login method
     private void login(String username, String password){
 
         isLoginIn = true;
@@ -101,6 +105,7 @@ public class EmployeeLoginActivity extends AppCompatActivity {
         if (sharedPref != null) {
             SharedPreferences.Editor editor = sharedPref.edit();
 
+            //saves last given username for easier use
             EditText etUsername = findViewById(R.id.etUsername);
             editor.putString(USERNAME_KEY, etUsername.getText().toString());
             editor.apply();

@@ -59,6 +59,7 @@ public class Employee implements Serializable {
         this.centreId = centreId;
     }
 
+    //if correct credentials are given, object gets its parameters filled with correspodning data
     public void login(String username, String password, final LoginCallback callback){
 
         DatabaseReference empRef = FirebaseDatabase.getInstance().getReference("Employees");

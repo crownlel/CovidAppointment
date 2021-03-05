@@ -38,23 +38,28 @@ public class CitizenMainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
 
+        //warning if gps is turned off
         if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
             buildAlertMessageNoGps();
         }
+        //load logged in citizen
         Bundle bundle = getIntent().getExtras();
         Citizen citizen = (Citizen) bundle.getSerializable("citizen");
         setContentView(R.layout.activity_citizen_main);
 
+        //configure fragment tabs
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager(), citizen);
         ViewPager viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(sectionsPagerAdapter);
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
 
+        //fills citizen's name on header
         TextView tvName = findViewById(R.id.tvName);
         tvName.setText(citizen.getName());
     }
 
+    //gps warning
     private void buildAlertMessageNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
@@ -73,15 +78,16 @@ public class CitizenMainActivity extends AppCompatActivity {
         alert.show();
     }
 
+    //opens edit dialog (used in recyclerview items)
     public void showEditDialog(Appointment appointment){
         final Dialog filterDialog = new Dialog(this);
         filterDialog.setContentView(R.layout.dialog_edit_appointment);
 
+        //use item layout inside the dialog
         LinearLayout itemLayout = filterDialog.findViewById(R.id.itemLayout);
         LayoutInflater factory = LayoutInflater.from(this);
         View itemView = factory.inflate(R.layout.item_appointment, null);
 
-        //fill view with data
         TextView tvDate = itemView.findViewById(R.id.tvDate);
         TextView tvTime = itemView.findViewById(R.id.tvTime);
         TextView tvCentre = itemView.findViewById(R.id.tvCentre);
@@ -90,6 +96,7 @@ public class CitizenMainActivity extends AppCompatActivity {
         Button btnCancel = filterDialog.findViewById(R.id.btnReject);
         Button btnApprove = filterDialog.findViewById(R.id.btnApprove);
 
+        //fields not useful for citizen are set to gone
         filterDialog.findViewById(R.id.tvSocSecNumber).setVisibility(View.GONE);
         filterDialog.findViewById(R.id.tvContact).setVisibility(View.GONE);
 
@@ -102,6 +109,7 @@ public class CitizenMainActivity extends AppCompatActivity {
             filterDialog.hide();
         });
 
+        //fill views with data
         tvTime.setText(new SimpleDateFormat("HH:mm").format(appointment.getDateAsDate()));
         tvDate.setText(new SimpleDateFormat("dd/MM/yyyy").format(appointment.getDateAsDate()));
 
@@ -117,11 +125,11 @@ public class CitizenMainActivity extends AppCompatActivity {
         itemLayout.addView(itemView);
         filterDialog.show();
     }
+
     public void mapView(View view) {
 
         Intent maps = new Intent(this, MapsActivity.class);
 
         startActivity(maps);
-
     }
 }

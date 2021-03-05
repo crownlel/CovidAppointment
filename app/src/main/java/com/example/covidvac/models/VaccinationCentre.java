@@ -124,6 +124,7 @@ public class VaccinationCentre {
 
     }
 
+    //gets distance from current vaccination center for given location
     public float getDistance(LatLng latlng){
 
         Location loc1 = new Location("");
@@ -137,6 +138,7 @@ public class VaccinationCentre {
         return loc1.distanceTo(loc2);
     }
 
+    //sorts given vaccination centers by distance for given location
     public static ArrayList<Map.Entry<VaccinationCentre,Float>> getSortedDistances(ArrayList<VaccinationCentre> centres, LatLng latlng){
         ArrayList sortedVac = new ArrayList<Map.Entry<VaccinationCentre,Float>>();
         for(VaccinationCentre centre : centres){

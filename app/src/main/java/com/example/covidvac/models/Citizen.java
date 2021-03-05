@@ -82,6 +82,7 @@ public class Citizen implements Serializable {
 //endregion
 
 
+    //if correct credentials are given, object gets its parameters filled with correspodning data
     public void login(DatabaseReference citRef, String tax_id, String birthday, final LoginCallback callback) {
 
         try {
@@ -148,13 +149,15 @@ public class Citizen implements Serializable {
         Appointment.getCitizenAppointments(appRef, id, callback);
     }
 
+    //gets appointments without datatracking
     public void getAppointmentsSingle(DatabaseReference appRef, final AppointmentListCallback callback){
 
         Appointment.getCitizenAppointmentsSingle(appRef, id, callback);
     }
 
+    //checks if citizen can sumbit a new appointment
     public void canSubmit(final BooleanCallBack callBack){
-        Appointment.getCitizenAppointments(FirebaseDatabase.getInstance().getReference("Appointments"), id, appointments -> {
+        Appointment.getCitizenAppointmentsSingle(FirebaseDatabase.getInstance().getReference("Appointments"), id, appointments -> {
 
             for(Appointment app : appointments){
                 if(!app.getIsCanceledToBool()){
